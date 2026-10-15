@@ -1,9 +1,11 @@
 @echo off
 rem Build BOMBNET.COM for SAPI-1 (CP/M) with z88dk: the BomberNet core (submodule) + the SAPI platform layer.
 rem   build.cmd            -> build\bombnet.com, build\bombnet.map
-rem z88dk: set Z88DK to its folder (default E:\SAPI_GIT\Tools\z88dk).
+rem z88dk: set Z88DK to its folder (default E:\SAPI_GIT\Tools\z88dk-nightly). The 2.4 release (2025-10-02) miscompiles
+rem the ternary in net_lockstep_poll, a network match gets no keys (docs\vyvoj.md, Pasti); BomberNet itself is
+rem built with the snap edge build of z88dk.
 setlocal
-if "%Z88DK%"=="" set Z88DK=E:\SAPI_GIT\Tools\z88dk
+if "%Z88DK%"=="" set Z88DK=E:\SAPI_GIT\Tools\z88dk-nightly
 set PATH=%Z88DK%\bin;%PATH%
 set ZCCCFG=%Z88DK%\lib\config
 set ROOT=%~dp0

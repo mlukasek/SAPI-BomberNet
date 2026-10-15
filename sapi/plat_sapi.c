@@ -392,6 +392,22 @@ static void ei_now(void) __naked {
   __endasm;
 }
 
+static void pal_load(void) __naked {            /* Bt476 colours 0..31, fast enough for the vertical blanking */
+  __asm
+    xor  a
+    ld   (CGA_PAL_ADDR),a
+    ld   hl,_sapi_palette
+    ld   de,CGA_PAL_DATA
+    ld   b,96
+pl_loop:
+    ld   a,(hl)
+    ld   (de),a
+    inc  hl
+    djnz pl_loop
+    ret
+  __endasm;
+}
+
 static void cga_clear(void) {                   /* the CPU page: 16000 bytes, black */
   memset((void *)CGA, 0, 16000);
 }
@@ -404,8 +420,11 @@ void plat_init(void) {
   cga_clear();
   *(volatile uint8_t *)CGA_CFG = 0x00;          /* CPU page A */
   cga_clear();
-  *(volatile uint8_t *)CGA_PAL_ADDR = 0;
-  for (i = 0; i < sizeof(sapi_palette); i++) *(volatile uint8_t *)CGA_PAL_DATA = sapi_palette[i];
+  /* the palette in the vertical blanking: written while the picture is shown, the Bt476 shows disturbed dots.
+   * STATUS D7 is a flip-flop set at the start of the blanking and cleared by CONFIG with D7 = 1. */
+  *(volatile uint8_t *)CGA_CFG = 0x80;          /* clear it (CPU page A, EGA, no interrupt) */
+  while (!(*(volatile uint8_t *)CGA_CFG & 0x80)) ;
+  pal_load();
   *(volatile uint8_t *)CGA_COLMASK = 0x1f;      /* index = attribute, pixel */
   outp(MIEN, 0x28);                             /* gates G2 and G0, no interrupts */
   outp(MIACK, 0xc0);
