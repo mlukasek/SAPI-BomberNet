@@ -1,0 +1,3451 @@
+C:/Users/kiwis/AppData/Local/Temp/zcc00013B285A0912.asm:
+     1                          MODULE plat_sapi_c
+     2                          LINE 0, "E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+                                
+     1                          ;* * * * *  Small-C/Plus z88dk * * * * *
+     2                          ;  Version: 23854-4d530b6eb7-20251002
+     3                          ;
+     4                          ;	Reconstructed for z80 Module Assembler
+     5                          ;
+     6                          ;	Module compile time: Fri Oct 16 00:56:14 2026
+     7                          
+     8                          
+     9                          	C_LINE	0,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+                                
+                                	MODULE	E__SAPI_GIT_SAPI_BomberNet_sapi_plat_sapi_c
+                                
+                                
+                                	INCLUDE "z80_crt0.hdr"
+E:/SAPI_GIT/Tools/z88dk/lib/config/../../lib/z80_crt0.hdr:
+     1                          ;
+     2                          ;	Header file which contains all required variables from the
+     3                          ;	startup that need to be exposed to individual C files
+     4                          ;
+     5                          ;	Stick in this file any routines which are needed or implicitly
+     6                          ;	implied by sccz80.
+     7                          ;
+     8                          ;	This file is included by every module
+     9                          ;	To handle multi module programs which use floating point
+    10                          ;	routines in different modules, we have got rid of
+    11                          ;	the conditional assembly around the float routines
+    12                          
+    13                          
+    14                          	EXTERN	base_graphics	; Address of graphics screen
+    15                          
+    16                          	EXTERN	_cpfar2near	; Far->near conversion (z88)
+    17                          	EXTERN	packintrout	; Process interrupt (z88 apps)
+    18                          
+    19                          	EXTERN	l_dcal		; jp(hl)
+    20                          	EXTERN	cleanup		; cleanup before program exit
+    21                          
+    22                          	EXTERN	l_jphl		; another jp(hl)
+    23                          	EXTERN	l_jpix		; jp(ix)
+    24                          	EXTERN	l_jpiy		; jp(iy)
+    25                          
+    26                          	EXTERN	l_setix		; set non-z80 jp(ix) smc
+    27                          	EXTERN	l_setiy		; set non-z80 jp(iy) smc
+    28                          
+    29                          	EXTERN	l_ldi
+    30                          	EXTERN	l_ldi_128
+    31                          	EXTERN	l_ldi_256
+    32                          
+    33                          	EXTERN	l_outi
+    34                          	EXTERN	l_outi_128
+    35                          	EXTERN	l_outi_256
+    36                          
+    37                          	EXTERN	l_ini
+    38                          	EXTERN	l_ini_128
+    39                          	EXTERN	l_ini_256
+    40                          	EXTERN	l_ini_512
+    41                          
+    42                          	; Used for banked calls for __banked for sccz80 + sdcc
+    43                          	EXTERN	banked_call
+    44                          
+    45                          ;------------------------------------
+    46                          ; Scopes for integer library routines
+    47                          ;------------------------------------
+    48                          
+    49                          	EXTERN	l_getptr	;Get 3 byte pointer
+    50                          	EXTERN	l_putptr	;Put 3 byte pointer
+    51                          	EXTERN	l_gchar		;Get signed char
+    52                          	EXTERN	l_gchar1
+    53                          	EXTERN	l_gchar2
+    54                          	EXTERN	l_gchar3
+    55                          	EXTERN	l_gchar4
+    56                          	EXTERN	l_gchar5
+    57                          	EXTERN	l_gchar6
+    58                          	EXTERN	l_gchar7
+    59                          	EXTERN	l_gchar8
+    60                          	EXTERN	l_gcharsp	;Get signed char  (peephole opt)
+    61                          	EXTERN	l_gcharspsp	;Get signed char and push  (peephole opt)
+    62                          	EXTERN	l_g2charspsp	;Get 2 signed char and push  (peephole opt)
+    63                          	EXTERN	l_sxt		;Sign extend char
+    64                          	EXTERN	l_gint		;Get int ld hl,(hl)
+    65                          	EXTERN	l_gint1sp	;Optimized variants ld hl,x add hl,sp ld hl,(hl)
+    66                          	EXTERN	l_gint2sp
+    67                          	EXTERN	l_gint3sp
+    68                          	EXTERN	l_gint4sp
+    69                          	EXTERN	l_gint5sp
+    70                          	EXTERN	l_gint6sp
+    71                          	EXTERN	l_gint7sp
+    72                          	EXTERN	l_gint8sp
+    73                          	EXTERN	l_gint1		;Optimized variants inc hl,x ld hl,(hl)
+    74                          	EXTERN	l_gint2
+    75                          	EXTERN	l_gint3
+    76                          	EXTERN	l_gint4
+    77                          	EXTERN	l_gint5
+    78                          	EXTERN	l_gint6
+    79                          	EXTERN	l_gint7
+    80                          	EXTERN	l_gint8
+    81                          	EXTERN	l_gintsp	;Get int (peephole opt)
+    82                          	EXTERN	l_gintspchar	;Get int,char (peephole opt)
+    83                          	EXTERN	l_gintspsp	;Get int and push (peephole opt)
+    84                          	EXTERN	l_g2intspsp	;Get 2 int and push (peephole opt)
+    85                          	EXTERN	l_gintsp2de	;Get int, multiply by 2 and add from SP by de
+    86                          	EXTERN	l_gint7de	;Get int, multiply by 7 and add from SP by de
+    87                          	EXTERN	l_gint_eq	;Get int and test == 0
+    88                          	EXTERN	l_ghtonsint	;Get reverse order int
+    89                          	EXTERN	l_pint		;Put int: ld (de),hl
+    90                          	EXTERN	l_pint_eq	;Put int and test == 0
+    91                          	EXTERN	l_pint_pop	;Put int and pop place address
+    92                          	EXTERN	l_or		;Int logical or
+    93                          	EXTERN	l_xor		;Int logical xor
+    94                          	EXTERN	l_and		;Int logical and
+    95                          	EXTERN	l_eq		;Int equality de == hl
+    96                          	EXTERN	l_eq_hlbc	;Int equality bc == hl
+    97                          	EXTERN	l_ne		;Int inequality de != hl
+    98                          	EXTERN	l_ne_hlbc	;Int inequality bc != hl
+    99                          	EXTERN	l_gt		;Int signed de > hl
+   100                          	EXTERN	l_gt_hlbc	;Int signed bc > hl
+   101                          	EXTERN	l_le		;Int signed de <= hl
+   102                          	EXTERN	l_le_hlbc	;Int signed bc <= hl
+   103                          	EXTERN	l_ge		;Int signed de >= hl
+   104                          	EXTERN	l_ge_hlbc	;Int signed bc >= hl
+   105                          	EXTERN	l_lt		;Int signed de < hl
+   106                          	EXTERN	l_lt_hlbc	;Int signed bc < hl
+   107                          	EXTERN	l_uge		;Int unsigned de >= hl
+   108                          	EXTERN	l_uge_hlbc	;Int unsigned bc >= hl
+   109                          	EXTERN	l_ult		;Int unsigned de < hl
+   110                          	EXTERN	l_ult_hlbc	;Int unsigned bc < hl
+   111                          	EXTERN	l_ugt		;Int unsigned de > hl
+   112                          	EXTERN	l_ugt_hlbc	;Int unsigned bc > hl
+   113                          	EXTERN	l_ule		;Int unsigned de <= hl
+   114                          	EXTERN	l_ule_hlbc	;Int unsigned bc <= hl
+   115                          	EXTERN	l_cmp		;Int signed compare
+   116                          	EXTERN	l_ucmp		;Int unsigned compare
+   117                          	EXTERN	l_asr		;Int signed de >> hl
+   118                          	EXTERN	l_asr_hl_by_e	;Int signed hl >> e
+   119                          	EXTERN	l_asr_u		;Int unsigned de >> hl
+   120                          	EXTERN	l_asr_u_hl_by_e	;Int unsigned hl >> e
+   121                          	EXTERN	l_asl		;Int de << hl
+   122                          	EXTERN	l_sub		;Int subtract hl = de - hl
+   123                          	EXTERN	l_neg		;Int negate
+   124                          	EXTERN	l_com		;Int ~
+   125                          	EXTERN	l_lneg		;Int logical negate
+   126                          	EXTERN	l_bool		;Int boolean test
+   127                          	EXTERN	l_cm_de
+   128                          	EXTERN	l_cm_bc
+   129                          	EXTERN	l_deneg
+   130                          	EXTERN	l_bcneg
+   131                          	EXTERN	l_case		;Integer case
+   132                          	EXTERN	l_mult		;Integer hl = hl * de
+   133                          	EXTERN	l_mult_u	;Integer unsigned *
+   134                          	EXTERN	l_div		;Integer signed / hl=de/hl, de=de%hl
+   135                          	EXTERN	l_div_u		;Integer unsigned /
+   136                          	EXTERN	l_mod		;Integer % (for gbz80) hl=de%hl
+   137                          	EXTERN	l_mod_u		;Integer unsigned % (for gbz80)
+   138                          
+   139                          ;------------------
+   140                          ;Long functions now
+   141                          ;------------------
+   142                          
+   143                          	EXTERN	lpush2		;Push a long under the stack
+   144                          	EXTERN	l_int2long_s	;Int->long signed conversion
+   145                          	EXTERN	l_int2long_s_float	;Int->long->float signed conversion (optimizer: use -O3)
+   146                          	EXTERN	l_int2long_u_float	;uInt->ulong->float signed conversion
+   147                          	EXTERN	l_glong		;Get long
+   148                          	EXTERN	l_glongsp	;Get long (peephole opt)
+   149                          	EXTERN	l_glonghlp	;Get pointer, then get long
+   150                          	EXTERN	l_glong2sp	;Get long and copy on stack (peephole opt)
+   151                          	EXTERN	l_glong2sp_hlp
+   152                          	EXTERN	l_long_add
+   153                          	EXTERN	l_long_and
+   154                          	EXTERN	l_long_asl
+   155                          	EXTERN	l_long_asr
+   156                          	EXTERN	l_long_aslo	;Long << shift in c
+   157                          	EXTERN	l_long_asro	;Long >> shift in c (signed)
+   158                          	EXTERN	l_long_bool
+   159                          	EXTERN	l_long_cmp
+   160                          	EXTERN	l_long_com
+   161                          	EXTERN	l_long_eq
+   162                          	EXTERN	l_long_ge
+   163                          	EXTERN	l_long_gt
+   164                          	EXTERN	l_long_le
+   165                          	EXTERN	l_long_lneg
+   166                          	EXTERN	l_long_lt
+   167                          	EXTERN	l_long_ne
+   168                          	EXTERN	l_long_neg
+   169                          	EXTERN	l_long_or
+   170                          	EXTERN	l_long_sub
+   171                          	EXTERN	l_long_ucmp
+   172                          	EXTERN	l_long_uge
+   173                          	EXTERN	l_long_ugt
+   174                          	EXTERN	l_long_ule
+   175                          	EXTERN	l_long_ult
+   176                          	EXTERN	l_long_xor
+   177                          	EXTERN	l_plong
+   178                          	EXTERN	l_inclong	;Increment long
+   179                          	EXTERN	l_declong	;Decrement long
+   180                          	EXTERN	l_long_div
+   181                          	EXTERN	l_long_div_u
+   182                          	EXTERN	l_long_mod
+   183                          	EXTERN	l_long_mod_u
+   184                          	EXTERN	l_long_mult
+   185                          	EXTERN	l_long_mult_u
+   186                          	EXTERN	l_long_asr_u	;Long unsigned >>
+   187                          	EXTERN	l_long_asr_uo	;Long unsigned >> shift in c
+   188                          	EXTERN	l_long_case
+   189                          	EXTERN	l_long_inc_mhl
+   190                          
+   191                          ;--------------------------------------------------------------
+   192                          ; Floating point support routines, mostly in library
+   193                          ;--------------------------------------------------------------
+   194                          
+   195                          	EXTERN	dadd
+   196                          	EXTERN	ddiv
+   197                          	EXTERN	dsub
+   198                          	EXTERN	dmul
+   199                          
+   200                          	EXTERN	dge
+   201                          	EXTERN	dgt
+   202                          	EXTERN	dleq
+   203                          	EXTERN	dlt
+   204                          	EXTERN	deq
+   205                          	EXTERN	dne
+   206                          
+   207                          	EXTERN	minusfa		;FA=-FA
+   208                          
+   209                          	EXTERN	dswap		;Exchange FA with top of stack
+   210                          	EXTERN	float		;Convert int to float
+   211                          	EXTERN	ufloat		;unsigned int to float
+   212                          	EXTERN	ifix		;Convert float to int
+   213                          
+   214                          	EXTERN	dstore		;FA->(de)
+   215                          	EXTERN	dload		;FA<-(hl)
+   216                          	EXTERN	dldpsh		;(hl)->(stack)
+   217                          	EXTERN	dpush		;FA->(stack)
+   218                          	EXTERN	dpush2		;FA->(stack under)
+   219                          	EXTERN	dpush3		;FA->(stack under,long)
+   220                          
+   221                          	EXTERN	fa		;may not be needed in this file
+   222                          	EXTERN	extra		;ditto
+   223                          	EXTERN	__atof2		;string->fa conversion
+   224                          	EXTERN	l_f48_ldexp	;FA * pow2(N)
+   225                          	EXTERN	l_f48_f16tof	;Convert _Float16 to float
+   226                          	EXTERN	l_f48_ftof16	;Convert float to _Float16
+   227                              EXTERN  l_f48_sllong2f
+   228                              EXTERN  l_f48_ullong2f
+   229                              EXTERN  l_f48_f2sllong
+   230                              EXTERN  l_f48_f2ullong
+   231                          
+   232                          	; 16 bit float ABI
+   233                          	EXTERN	l_f16_add
+   234                          	EXTERN	l_f16_sub
+   235                          	EXTERN	l_f16_mul
+   236                          	EXTERN	l_f16_div
+   237                          	EXTERN	l_f16_le
+   238                          	EXTERN	l_f16_lt
+   239                          	EXTERN	l_f16_ge
+   240                          	EXTERN	l_f16_gt
+   241                          	EXTERN	l_f16_eq
+   242                          	EXTERN	l_f16_ne
+   243                          	EXTERN	l_f16_swap
+   244                          	EXTERN	l_f16_schar2f
+   245                          	EXTERN	l_f16_uchar2f
+   246                          	EXTERN	l_f16_sint2f
+   247                          	EXTERN	l_f16_uint2f
+   248                          	EXTERN	l_f16_slong2f
+   249                          	EXTERN	l_f16_ulong2f
+   250                          	EXTERN	l_f16_f2sint
+   251                          	EXTERN	l_f16_f2uint
+   252                          	EXTERN	l_f16_f2slong
+   253                          	EXTERN	l_f16_f2ulong
+   254                          	EXTERN	l_f16_ldexp
+   255                          	EXTERN	l_f16_invf	;Only for ieee16
+   256                          	EXTERN	l_f16_f16tof	;A noop
+   257                          	EXTERN	l_f16_ftof16	;A noop
+   258                          
+   259                          	; 32 bit float ABI
+   260                          	EXTERN	l_f32_add
+   261                          	EXTERN	l_f32_sub
+   262                          	EXTERN	l_f32_mul
+   263                          	EXTERN	l_f32_div
+   264                          	EXTERN	l_f32_le
+   265                          	EXTERN	l_f32_lt
+   266                          	EXTERN	l_f32_ge
+   267                          	EXTERN	l_f32_gt
+   268                          	EXTERN	l_f32_eq
+   269                          	EXTERN	l_f32_ne
+   270                          	EXTERN	l_f32_swap
+   271                          	EXTERN	l_f32_negate
+   272                          	EXTERN	l_f32_schar2f
+   273                          	EXTERN	l_f32_uchar2f
+   274                          	EXTERN	l_f32_sint2f
+   275                          	EXTERN	l_f32_uint2f
+   276                          	EXTERN	l_f32_slong2f
+   277                          	EXTERN	l_f32_ulong2f
+   278                          	EXTERN	l_f32_f2sint
+   279                          	EXTERN	l_f32_f2uint
+   280                          	EXTERN	l_f32_f2slong
+   281                          	EXTERN	l_f32_f2ulong
+   282                          	EXTERN	l_f32_ldexp
+   283                          	EXTERN	l_f32_invf	;Only for math32
+   284                          	EXTERN	l_f32_f16tof	;Convert _Float16 to float
+   285                          	EXTERN	l_f32_ftof16	;Convert float to _Float16
+   286                          
+   287                          	; 64 bit float ABI
+   288                          	EXTERN	l_f64_load
+   289                          	EXTERN	l_f64_add
+   290                          	EXTERN	l_f64_sub
+   291                          	EXTERN	l_f64_mul
+   292                          	EXTERN	l_f64_div
+   293                          	EXTERN	l_f64_le
+   294                          	EXTERN	l_f64_lt
+   295                          	EXTERN	l_f64_ge
+   296                          	EXTERN	l_f64_gt
+   297                          	EXTERN	l_f64_eq
+   298                          	EXTERN	l_f64_ne
+   299                          	EXTERN	l_f64_negate
+   300                          	EXTERN	l_f64_swap
+   301                          	EXTERN	l_f64_store
+   302                          	EXTERN	l_f64_dpush
+   303                          	EXTERN	l_f64_dldpsh
+   304                          	EXTERN	l_f64_dpush2
+   305                          	EXTERN	l_f64_dpush3
+   306                          	EXTERN	l_f64_schar2f
+   307                          	EXTERN	l_f64_uchar2f
+   308                          	EXTERN	l_f64_sint2f
+   309                          	EXTERN	l_f64_uint2f
+   310                          	EXTERN	l_f64_slong2f
+   311                          	EXTERN	l_f64_ulong2f
+   312                          	EXTERN	l_f64_f2sint
+   313                          	EXTERN	l_f64_f2uint
+   314                          	EXTERN	l_f64_f2slong
+   315                          	EXTERN	l_f64_f2ulong
+   316                          	EXTERN	l_f64_ldexp
+   317                          	EXTERN	l_f64_f16tof	;Convert _Float16 to float
+   318                          	EXTERN	l_f64_ftof16	;Convert float to _Float16
+   319                          
+   320                          
+   321                          ;--------------------------------------------------
+   322                          ; Routines for picking up variables from far memory
+   323                          ;--------------------------------------------------
+   324                          
+   325                          	EXTERN	lp_gchar
+   326                          	EXTERN	lp_guchar
+   327                          	EXTERN	lp_gdoub
+   328                          	EXTERN	lp_gint
+   329                          	EXTERN	lp_glong
+   330                          	EXTERN	lp_gptr
+   331                          	EXTERN	lp_pchar
+   332                          	EXTERN	lp_pdoub
+   333                          	EXTERN	lp_pint
+   334                          	EXTERN	lp_plong
+   335                          	EXTERN	lp_pptr
+   336                          
+   337                          	EXTERN	l_farcall	; Long call
+   338                          	EXTERN  l_far_mapaddr	; Map __banked to __far
+   339                          
+   340                          ;--------------------------------------------------
+   341                          ; Routines for handling 16 bit fixed point for sccz80
+   342                          ;--------------------------------------------------
+   343                          
+   344                          	EXTERN	l_f16_fix16tof
+   345                          	EXTERN	l_f16_ftofix16
+   346                          	EXTERN	l_f32_fix16tof
+   347                          	EXTERN	l_f32_ftofix16
+   348                          	EXTERN	l_f48_fix16tof
+   349                              EXTERN  l_f48_ftofix16s
+   350                          	EXTERN	l_f48_ftofix16
+   351                          	EXTERN	l_f64_fix16tof
+   352                          	EXTERN	l_f64_ftofix16
+   353                          	EXTERN	l_fix16_divu
+   354                          	EXTERN	l_fix16_divs
+   355                          	EXTERN	l_fix16_f2sint
+   356                          	EXTERN	l_fix16_f2slong
+   357                          	EXTERN	l_fix16_f2uint
+   358                          	EXTERN	l_fix16_f2ulong
+   359                              EXTERN  l_fix16_uchar2f
+   360                              EXTERN  l_fix16_uint2f
+   361                              EXTERN  l_fix16_ulong2f
+   362                              EXTERN  l_fix16_schar2f
+   363                              EXTERN  l_fix16_sint2f
+   364                              EXTERN  l_fix16_slong2f
+   365                          	EXTERN	l_fix16_inv
+   366                          	EXTERN	l_fix16_mul
+   367                          	EXTERN	l_fix16_mulu
+   368                          	EXTERN	l_fix16_muls
+   369                          	EXTERN	l_fix16_negate
+   370                          
+   371                          ;--------------------------------------------------
+   372                          ; Routines for handling 64 bit integers for sccz80
+   373                          ;--------------------------------------------------
+   374                          
+   375                          	EXTERN	__i64_acc
+   376                          	EXTERN	l_i64_load
+   377                          	EXTERN	l_i64_store
+   378                          	EXTERN	l_i64_push
+   379                          	EXTERN	l_i64_add
+   380                          	EXTERN	l_i64_sub
+   381                          	EXTERN	l_i64_mult
+   382                          	EXTERN	l_i64_mult_u
+   383                          	EXTERN	l_i64_mod
+   384                          	EXTERN	l_i64_mod_u
+   385                          	EXTERN	l_i64_div
+   386                          	EXTERN	l_i64_div_u
+   387                          	EXTERN	l_i64_or
+   388                          	EXTERN	l_i64_xor
+   389                          	EXTERN	l_i64_and
+   390                          	EXTERN	l_i64_asr_u
+   391                          	EXTERN	l_i64_asr_uo
+   392                          	EXTERN	l_i64_asr
+   393                          	EXTERN	l_i64_asro
+   394                          	EXTERN	l_i64_asl
+   395                          	EXTERN	l_i64_aslo
+   396                          	EXTERN	l_i64_inc
+   397                          	EXTERN	l_i64_dec
+   398                          	EXTERN	l_i64_eq0
+   399                          	EXTERN	l_i64_eq
+   400                          	EXTERN	l_i64_ne
+   401                          	EXTERN	l_i64_ge
+   402                          	EXTERN	l_i64_gt
+   403                          	EXTERN	l_i64_uge
+   404                          	EXTERN	l_i64_ugt
+   405                          	EXTERN	l_i64_le
+   406                          	EXTERN	l_i64_lt
+   407                          	EXTERN	l_i64_ule
+   408                          	EXTERN	l_i64_ult
+   409                          	EXTERN	l_i64_lneg
+   410                          	EXTERN	l_i64_neg
+   411                          	EXTERN	l_i64_com
+   412                          	EXTERN	l_i64_case
+   413                          	EXTERN	l_i64_push_under_int
+   414                          	EXTERN	l_i64_push_under_int_mhl
+   415                          	EXTERN	l_i64_copy
+   416                          	EXTERN	l_i64_slong2i64
+   417                          	EXTERN	l_i64_ulong2i64
+   418                          	EXTERN	l_i64_sint2i64
+   419                          	EXTERN	l_i64_uint2i64
+   420                          	EXTERN	l_i64_u64_toi32
+   421                          	EXTERN	l_i64_s64_toi32
+   422                          
+   423                          
+   424                          ;-------------------
+   425                          ; Routines for SDCC
+   426                          ;-------------------
+   427                          
+   428                          	EXTERN	__divsint_rrx_s
+   429                          	EXTERN	__divsint_rrx_hds
+   430                          	EXTERN	__divuint_rrx_s
+   431                          	EXTERN	__divuint_rrx_hds
+   432                          	EXTERN	__divsuchar_rrx_s
+   433                          	EXTERN	__divuschar_rrx_s
+   434                          	EXTERN	__divuchar_rrx_s
+   435                          	EXTERN	__divuchar_rrx_hds
+   436                          	EXTERN	__moduchar_rrx_s
+   437                          	EXTERN	__moduchar_rrx_hds
+   438                          	EXTERN	__moduschar_rrx_s
+   439                          	EXTERN	__modsuchar_rrx_s
+   440                          	EXTERN	__modschar_rrx_s
+   441                          	EXTERN	__modschar_rrx_hds
+   442                          	EXTERN	__modsint_rrx_s
+   443                          	EXTERN	__modsint_rrx_hds
+   444                          	EXTERN	__moduint_rrx_s
+   445                          	EXTERN	__moduint_rrx_hds
+   446                          	EXTERN	__get_remainder
+   447                          	EXTERN	__divunsigned
+   448                          	EXTERN	__div_signexte
+   449                          	EXTERN	__divu16
+   450                          	EXTERN	__div16
+   451                          	EXTERN	__div8
+   452                          	EXTERN	__muluchar_rrx_s
+   453                          	EXTERN	__muluchar_rrx_hds
+   454                          	EXTERN	__mulsuchar_rrx_s
+   455                          	EXTERN	__muluschar_rrx_s
+   456                          	EXTERN	__mulschar_rrx_s
+   457                          	EXTERN	__mulschar_rrx_hds
+   458                          	EXTERN	__mulint_rrx_s
+   459                          	EXTERN	__mulint_rrx_hds
+   460                          	EXTERN	__mul16
+   461                          	EXTERN	__rrulong_rrx_s
+   462                          	EXTERN	__rrslong_rrx_s
+   463                          	EXTERN	__rlslong_rrx_s
+   464                          	EXTERN	__rlulong_rrx_s
+   465                          	EXTERN	__muluchar
+   466                          	EXTERN	__mulschar
+   467                          
+   468                          	EXTERN	l_push_di
+   469                          	EXTERN	l_pop_ei
+   470                          
+   471                          	EXTERN	l_debug_push_frame
+   472                          	EXTERN	l_debug_pop_frame
+   473                          
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+                                
+                                
+                                	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h:
+                                	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/compiler.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/compiler.h:
+                                	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/proto.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/proto.h:
+                                	C_LINE	6,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/compiler.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/compiler.h:
+     6                          	C_LINE	10,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h:
+    10                          	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h:
+                                	C_LINE	17,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    17                          	C_LINE	26,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    26                          	C_LINE	38,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    38                          	C_LINE	44,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    44                          	C_LINE	49,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    49                          	C_LINE	54,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    54                          	C_LINE	59,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    59                          	C_LINE	64,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    64                          	C_LINE	69,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    69                          	C_LINE	74,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    74                          	C_LINE	79,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    79                          	C_LINE	84,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    84                          	C_LINE	89,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    89                          	C_LINE	93,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    93                          	C_LINE	94,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    94                          	C_LINE	95,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    95                          	C_LINE	97,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    97                          	C_LINE	98,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    98                          	C_LINE	99,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+    99                          	C_LINE	105,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+   105                          	C_LINE	110,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/sys/types.h"
+   110                          	C_LINE	11,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h:
+    11                          	C_LINE	13,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    13                          	C_LINE	14,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    14                          	C_LINE	15,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    15                          	C_LINE	17,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    17                          	C_LINE	18,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    18                          	C_LINE	19,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    19                          	C_LINE	21,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    21                          	C_LINE	22,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    22                          	C_LINE	23,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    23                          	C_LINE	25,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    25                          	C_LINE	26,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    26                          	C_LINE	27,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    27                          	C_LINE	29,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    29                          	C_LINE	30,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    30                          	C_LINE	31,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    31                          	C_LINE	33,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    33                          	C_LINE	34,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    34                          	C_LINE	35,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    35                          	C_LINE	37,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    37                          	C_LINE	38,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    38                          	C_LINE	40,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    40                          	C_LINE	41,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    41                          	C_LINE	43,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    43                          	C_LINE	44,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    44                          	C_LINE	49,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    49                          	C_LINE	52,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    52                          	C_LINE	54,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    54                          	C_LINE	55,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdint.h"
+    55                          	C_LINE	16,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+    16                          	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h:
+                                	C_LINE	27,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    27                          	C_LINE	29,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    29                          	C_LINE	33,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    33                          	C_LINE	35,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    35                          	C_LINE	39,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    39                          	C_LINE	41,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    41                          	C_LINE	45,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    45                          	C_LINE	47,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    47                          	C_LINE	51,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    51                          	C_LINE	53,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    53                          	C_LINE	57,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    57                          	C_LINE	59,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    59                          	C_LINE	63,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    63                          	C_LINE	65,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    65                          	C_LINE	69,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    69                          	C_LINE	71,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    71                          	C_LINE	79,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    79                          	C_LINE	81,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    81                          	C_LINE	86,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    86                          	C_LINE	88,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    88                          	C_LINE	93,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    93                          	C_LINE	95,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+    95                          	C_LINE	100,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   100                          	C_LINE	102,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   102                          	C_LINE	107,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   107                          	C_LINE	109,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   109                          	C_LINE	119,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   119                          	C_LINE	120,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   120                          	C_LINE	122,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   122                          	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h:
+                                	C_LINE	59,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    59                          	C_LINE	60,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    60                          	C_LINE	61,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    61                          	C_LINE	62,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    62                          	C_LINE	63,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    63                          	C_LINE	64,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    64                          	C_LINE	65,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    65                          	C_LINE	70,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    70                          	C_LINE	71,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    71                          	C_LINE	72,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    72                          	C_LINE	73,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    73                          	C_LINE	74,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    74                          	C_LINE	75,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+    75                          	C_LINE	130,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   130                          	C_LINE	131,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   131                          	C_LINE	132,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   132                          	C_LINE	133,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   133                          	C_LINE	134,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   134                          	C_LINE	135,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   135                          	C_LINE	136,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   136                          	C_LINE	137,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   137                          	C_LINE	138,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   138                          	C_LINE	139,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   139                          	C_LINE	140,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   140                          	C_LINE	141,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   141                          	C_LINE	142,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   142                          	C_LINE	158,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   158                          	C_LINE	159,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   159                          	C_LINE	160,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   160                          	C_LINE	163,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   163                          	C_LINE	164,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   164                          	C_LINE	166,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   166                          	C_LINE	170,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/malloc.h"
+   170                          	C_LINE	138,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h:
+   138                          	C_LINE	151,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   151                          	C_LINE	152,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   152                          	C_LINE	155,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   155                          	C_LINE	156,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   156                          	C_LINE	164,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   164                          	C_LINE	165,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   165                          	C_LINE	166,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   166                          	C_LINE	167,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   167                          	C_LINE	171,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   171                          	C_LINE	174,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   174                          	C_LINE	175,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   175                          	C_LINE	176,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   176                          	C_LINE	177,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   177                          	C_LINE	178,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   178                          	C_LINE	190,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   190                          	C_LINE	191,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   191                          	C_LINE	192,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   192                          	C_LINE	193,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   193                          	C_LINE	197,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   197                          	C_LINE	198,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   198                          	C_LINE	200,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   200                          	C_LINE	201,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   201                          	C_LINE	226,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   226                          	C_LINE	234,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   234                          	C_LINE	242,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   242                          	C_LINE	250,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   250                          	C_LINE	258,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   258                          	C_LINE	260,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   260                          	C_LINE	265,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   265                          	C_LINE	267,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   267                          	C_LINE	272,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   272                          	C_LINE	274,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   274                          	C_LINE	279,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   279                          	C_LINE	281,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   281                          	C_LINE	291,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   291                          	C_LINE	293,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   293                          	C_LINE	297,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   297                          	C_LINE	299,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   299                          	C_LINE	304,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   304                          	C_LINE	306,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   306                          	C_LINE	323,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   323                          	C_LINE	325,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   325                          	C_LINE	329,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   329                          	C_LINE	331,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   331                          	C_LINE	344,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   344                          	C_LINE	365,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   365                          	C_LINE	367,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   367                          	C_LINE	369,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   369                          	C_LINE	373,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   373                          	C_LINE	375,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   375                          	C_LINE	393,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   393                          	C_LINE	395,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   395                          	C_LINE	400,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   400                          	C_LINE	403,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/stdlib.h"
+   403                          	C_LINE	17,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+    17                          	C_LINE	0,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h:
+                                	C_LINE	7,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+     7                          	C_LINE	9,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+     9                          	C_LINE	13,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    13                          	C_LINE	15,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    15                          	C_LINE	19,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    19                          	C_LINE	21,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    21                          	C_LINE	25,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    25                          	C_LINE	27,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    27                          	C_LINE	32,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    32                          	C_LINE	34,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    34                          	C_LINE	38,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    38                          	C_LINE	40,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    40                          	C_LINE	44,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    44                          	C_LINE	46,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    46                          	C_LINE	50,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    50                          	C_LINE	52,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    52                          	C_LINE	57,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    57                          	C_LINE	59,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    59                          	C_LINE	63,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    63                          	C_LINE	65,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    65                          	C_LINE	69,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    69                          	C_LINE	71,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    71                          	C_LINE	76,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    76                          	C_LINE	77,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    77                          	C_LINE	78,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    78                          	C_LINE	81,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    81                          	C_LINE	83,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    83                          	C_LINE	87,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    87                          	C_LINE	89,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    89                          	C_LINE	94,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    94                          	C_LINE	96,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+    96                          	C_LINE	101,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   101                          	C_LINE	103,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   103                          	C_LINE	108,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   108                          	C_LINE	110,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   110                          	C_LINE	115,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   115                          	C_LINE	117,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   117                          	C_LINE	122,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   122                          	C_LINE	124,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   124                          	C_LINE	128,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   128                          	C_LINE	130,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   130                          	C_LINE	138,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   138                          	C_LINE	140,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   140                          	C_LINE	144,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   144                          	C_LINE	146,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   146                          	C_LINE	150,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   150                          	C_LINE	152,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   152                          	C_LINE	157,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   157                          	C_LINE	159,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   159                          	C_LINE	163,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   163                          	C_LINE	165,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   165                          	C_LINE	169,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   169                          	C_LINE	171,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   171                          	C_LINE	175,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   175                          	C_LINE	177,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   177                          	C_LINE	181,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   181                          	C_LINE	183,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   183                          	C_LINE	187,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   187                          	C_LINE	189,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   189                          	C_LINE	193,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   193                          	C_LINE	195,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   195                          	C_LINE	199,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   199                          	C_LINE	201,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   201                          	C_LINE	205,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   205                          	C_LINE	207,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   207                          	C_LINE	212,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   212                          	C_LINE	214,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   214                          	C_LINE	219,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   219                          	C_LINE	221,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   221                          	C_LINE	226,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   226                          	C_LINE	228,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   228                          	C_LINE	232,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   232                          	C_LINE	234,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   234                          	C_LINE	238,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   238                          	C_LINE	240,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   240                          	C_LINE	245,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   245                          	C_LINE	247,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   247                          	C_LINE	253,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   253                          	C_LINE	255,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   255                          	C_LINE	259,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   259                          	C_LINE	261,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   261                          	C_LINE	265,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   265                          	C_LINE	267,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   267                          	C_LINE	271,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   271                          	C_LINE	273,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   273                          	C_LINE	278,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   278                          	C_LINE	280,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   280                          	C_LINE	284,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   284                          	C_LINE	286,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   286                          	C_LINE	290,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   290                          	C_LINE	292,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   292                          	C_LINE	296,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   296                          	C_LINE	298,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   298                          	C_LINE	302,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   302                          	C_LINE	304,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   304                          	C_LINE	308,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   308                          	C_LINE	310,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   310                          	C_LINE	314,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   314                          	C_LINE	316,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   316                          	C_LINE	320,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   320                          	C_LINE	321,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   321                          	C_LINE	323,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   323                          	C_LINE	328,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   328                          	C_LINE	330,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   330                          	C_LINE	335,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   335                          	C_LINE	336,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   336                          	C_LINE	338,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   338                          	C_LINE	343,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   343                          	C_LINE	345,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   345                          	C_LINE	349,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   349                          	C_LINE	351,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   351                          	C_LINE	355,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   355                          	C_LINE	357,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   357                          	C_LINE	361,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   361                          	C_LINE	363,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   363                          	C_LINE	369,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   369                          	C_LINE	371,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   371                          	C_LINE	375,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   375                          	C_LINE	377,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   377                          	C_LINE	381,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   381                          	C_LINE	383,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   383                          	C_LINE	387,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   387                          	C_LINE	389,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   389                          	C_LINE	394,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   394                          	C_LINE	396,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   396                          	C_LINE	400,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   400                          	C_LINE	401,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   401                          	C_LINE	403,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   403                          	C_LINE	409,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   409                          	C_LINE	411,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   411                          	C_LINE	415,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   415                          	C_LINE	417,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   417                          	C_LINE	425,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   425                          	C_LINE	425,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   425                          	C_LINE	427,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   427                          	C_LINE	429,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   429                          	C_LINE	430,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   430                          	C_LINE	431,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   431                          	C_LINE	433,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   433                          	C_LINE	434,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   434                          	C_LINE	436,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   436                          	C_LINE	437,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   437                          	C_LINE	439,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   439                          	C_LINE	440,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   440                          	C_LINE	442,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   442                          	C_LINE	443,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   443                          	C_LINE	444,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   444                          	C_LINE	446,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   446                          	C_LINE	447,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   447                          	C_LINE	448,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   448                          	C_LINE	449,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   449                          	C_LINE	464,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   464                          	C_LINE	470,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   470                          	C_LINE	476,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   476                          	C_LINE	482,"E:\SAPI_GIT\Tools\z88dk\lib\config\..\..\/include/string.h"
+   482                          	C_LINE	18,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+    18                          	C_LINE	0,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h:
+                                	C_LINE	0,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h:
+                                	C_LINE	0,"E:\SAPI_GIT\SAPI-BomberNet\sapi/plat_config.h"
+E:\SAPI_GIT\SAPI-BomberNet\sapi/plat_config.h:
+                                	C_LINE	13,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h:
+    13                          	C_LINE	21,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    21                          	C_LINE	23,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    23                          	C_LINE	24,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    24                          	C_LINE	25,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    25                          	C_LINE	26,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    26                          	C_LINE	33,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    33                          	C_LINE	34,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    34                          	C_LINE	35,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    35                          	C_LINE	36,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    36                          	C_LINE	37,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    37                          	C_LINE	40,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    40                          	C_LINE	41,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    41                          	C_LINE	42,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    42                          	C_LINE	43,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    43                          	C_LINE	46,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    46                          	C_LINE	47,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    47                          	C_LINE	50,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    50                          	C_LINE	51,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\platform.h"
+    51                          	C_LINE	16,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h:
+    16                          	C_LINE	0,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h:
+                                	C_LINE	15,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    15                          	C_LINE	16,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    16                          	C_LINE	24,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    24                          	C_LINE	35,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    35                          	C_LINE	36,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    36                          	C_LINE	37,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    37                          	C_LINE	38,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    38                          	C_LINE	39,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    39                          	C_LINE	40,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    40                          	C_LINE	41,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    41                          	C_LINE	42,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    42                          	C_LINE	43,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    43                          	C_LINE	44,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core\netdev.h"
+    44                          	C_LINE	17,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h:
+    17                          	C_LINE	57,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+    57                          	C_LINE	73,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+    73                          	C_LINE	81,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+    81                          	C_LINE	108,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   108                          	C_LINE	125,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   125                          	C_LINE	126,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   126                          	C_LINE	127,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   127                          	C_LINE	128,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   128                          	C_LINE	129,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   129                          	C_LINE	130,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   130                          	C_LINE	131,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   131                          	C_LINE	132,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   132                          	C_LINE	133,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   133                          	C_LINE	134,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   134                          	C_LINE	135,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   135                          	C_LINE	136,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   136                          	C_LINE	137,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   137                          	C_LINE	138,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   138                          	C_LINE	139,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   139                          	C_LINE	140,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   140                          	C_LINE	141,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   141                          	C_LINE	144,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   144                          	C_LINE	145,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   145                          	C_LINE	146,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   146                          	C_LINE	147,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   147                          	C_LINE	149,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   149                          	C_LINE	157,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   157                          	C_LINE	158,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   158                          	C_LINE	159,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   159                          	C_LINE	160,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   160                          	C_LINE	161,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   161                          	C_LINE	162,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   162                          	C_LINE	163,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   163                          	C_LINE	164,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   164                          	C_LINE	165,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   165                          	C_LINE	166,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   166                          	C_LINE	167,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   167                          	C_LINE	179,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   179                          	C_LINE	180,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   180                          	C_LINE	181,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   181                          	C_LINE	184,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   184                          	C_LINE	185,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   185                          	C_LINE	186,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   186                          	C_LINE	194,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   194                          	C_LINE	195,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   195                          	C_LINE	196,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   196                          	C_LINE	197,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   197                          	C_LINE	198,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   198                          	C_LINE	199,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   199                          	C_LINE	200,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   200                          	C_LINE	201,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   201                          	C_LINE	202,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   202                          	C_LINE	203,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   203                          	C_LINE	204,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   204                          	C_LINE	205,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   205                          	C_LINE	219,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   219                          	C_LINE	220,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   220                          	C_LINE	221,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   221                          	C_LINE	222,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   222                          	C_LINE	223,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   223                          	C_LINE	225,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   225                          	C_LINE	226,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   226                          	C_LINE	227,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   227                          	C_LINE	231,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   231                          	C_LINE	232,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   232                          	C_LINE	233,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   233                          	C_LINE	234,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   234                          	C_LINE	235,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   235                          	C_LINE	238,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   238                          	C_LINE	239,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   239                          	C_LINE	240,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   240                          	C_LINE	243,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   243                          	C_LINE	244,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   244                          	C_LINE	245,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   245                          	C_LINE	248,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   248                          	C_LINE	249,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   249                          	C_LINE	250,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   250                          	C_LINE	251,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   251                          	C_LINE	252,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   252                          	C_LINE	255,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   255                          	C_LINE	256,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   256                          	C_LINE	257,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   257                          	C_LINE	258,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   258                          	C_LINE	259,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   259                          	C_LINE	262,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   262                          	C_LINE	263,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   263                          	C_LINE	264,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   264                          	C_LINE	265,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   265                          	C_LINE	266,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   266                          	C_LINE	267,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   267                          	C_LINE	268,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   268                          	C_LINE	269,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   269                          	C_LINE	270,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   270                          	C_LINE	271,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   271                          	C_LINE	272,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   272                          	C_LINE	273,"E:\SAPI_GIT\SAPI-BomberNet\BomberNet\c\core/game.h"
+   273                          	C_LINE	19,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+    19                          	C_LINE	0,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h:
+                                	C_LINE	5,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+     5                          	C_LINE	6,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+     6                          	C_LINE	7,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+     7                          	C_LINE	8,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+     8                          	C_LINE	9,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+     9                          	C_LINE	10,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+    10                          	C_LINE	11,"E:\SAPI_GIT\SAPI-BomberNet\sapi\tables.h"
+    11                          	C_LINE	20,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c:
+    20                          	C_LINE	56,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+    56                          	SECTION	rodata_compiler
+    56                          ._plat_joy_names
+    56  0000  2400              	defw	i_1+0
+    56  0002  2d00              	defw	i_1+9
+    56                          	SECTION	code_compiler
+    56                          	C_LINE	57,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+    57                          	SECTION	rodata_compiler
+    57                          ._plat_kbd_a_alt_name
+    57  0004  3600              	defw	i_1+18
+    57                          	SECTION	code_compiler
+    57                          	C_LINE	59,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c"
+    59                          
+    59                          ; Function plat_input_name flags 0x00000200 __smallc
+    59                          ; const char * plat_input_name(unsigned char input)
+    59                          ; parameter 'unsigned char input' at sp+2 size(1)
+    59                          	C_LINE	59,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_name::0::0"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_name::0::0:
+    59                          ._plat_input_name
+    59  0000  210200            	ld	hl,2	;const
+    59  0003  39                	add	hl,sp
+    59  0004  6e                	ld	l,(hl)
+    59  0005  2600              	ld	h,0
+    59                          .i_6
+    59  0007  7d                	ld	a,l
+    59  0008  fe01              	cp	+(1% 256)
+    59  000a  ca1f00            	jp	z,i_7	;
+    59  000d  fe02              	cp	+(2% 256)
+    59  000f  ca2300            	jp	z,i_8	;
+    59  0012  fe03              	cp	+(3% 256)
+    59  0014  ca2700            	jp	z,i_9	;
+    59  0017  fe04              	cp	+(4% 256)
+    59  0019  ca2b00            	jp	z,i_10	;
+    59  001c  c32f00            	jp	i_5	;EOS
+    59                          .i_7
+    59  001f  214700            	ld	hl,i_1+35
+    59  0022  c9                	ret
+    59                          
+    59                          
+    59                          .i_8
+    59  0023  215800            	ld	hl,i_1+52
+    59  0026  c9                	ret
+    59                          
+    59                          
+    59                          .i_9
+    59  0027  216900            	ld	hl,i_1+69
+    59  002a  c9                	ret
+    59                          
+    59                          
+    59                          .i_10
+    59  002b  217a00            	ld	hl,i_1+86
+    59  002e  c9                	ret
+    59                          
+    59                          
+    59                          .i_5
+    59  002f  212c00            	ld	hl,i_1+8
+    59  0032  c9                	ret
+    59                          
+    59                          
+    59                          	C_LINE	69,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_name::0::2"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_name::0::2:
+    69                          
+    69                          ; Function plat_input_allowed flags 0x00000200 __smallc
+    69                          ; unsigned char uint8_tplat_input_allowed(unsigned char input)
+    69                          ; parameter 'unsigned char input' at sp+2 size(1)
+    69                          	C_LINE	69,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_allowed::0::2"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_allowed::0::2:
+    69                          ._plat_input_allowed
+    69  0033  210200            	ld	hl,2	;const
+    69  0036  39                	add	hl,sp
+    69  0037  7e                	ld	a,(hl)
+    69  0038  fe03              	cp	3
+    69  003a  c24b00            	jp	nz,i_11	;
+    69  003d  2a0000            	ld	hl,(_joy_type)
+    69  0040  2600              	ld	h,0
+    69  0042  7d                	ld	a,l
+    69  0043  a7                	and	a
+    69  0044  210000            	ld	hl,0	;const
+    69  0047  2801              	jr	z,ASMPC+3
+    69  0049  23                	inc	hl
+    69  004a  c9                	ret
+    69                          
+    69                          
+    69                          .i_11
+    69  004b  210200            	ld	hl,2	;const
+    69  004e  39                	add	hl,sp
+    69  004f  7e                	ld	a,(hl)
+    69  0050  fe01              	cp	1
+    69  0052  ca5f00            	jp	z,i_12	;
+    69  0055  fe02              	cp	2
+    69  0057  ca5f00            	jp	z,i_12	;
+    69  005a  210000            	ld	hl,0	;const
+    69  005d  1803              	jr	i_13
+    69                          .i_12
+    69  005f  210100            	ld	hl,1	;const
+    69                          .i_13
+    69  0062  2600              	ld	h,0
+    69  0064  c9                	ret
+    69                          
+    69                          
+    69                          	C_LINE	76,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_allowed::0::3"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_input_allowed::0::3:
+    76                          
+    76                          ; Function ctr2_read flags 0x00000a00 __smallc __naked
+    76                          ; unsigned int uint16_tctr2_read()
+    76                          	C_LINE	76,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ctr2_read::0::3"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ctr2_read::0::3:
+    76                          ._ctr2_read
+    76  0065  3e80                  ld   a,0x80             ; counter 2, latch
+    76  0067  d353                  out  ( 0x53 ),a
+    76  0069  db52                  in   a,( 0x52 )
+    76  006b  6f                    ld   l,a
+    76  006c  db52                  in   a,( 0x52 )
+    76  006e  67                    ld   h,a
+    76  006f  c9                    ret
+    76                          	C_LINE	88,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ctr2_read::0::4"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ctr2_read::0::4:
+    88                          	C_LINE	90,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ctr2_read::0::4"
+    90                          
+    90                          ; Function frame_timer flags 0x00000200 __smallc
+    90                          ; void frame_timer(unsigned int div)
+    90                          ; parameter 'unsigned int div' at sp+2 size(2)
+    90                          	C_LINE	90,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::frame_timer::0::4"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::frame_timer::0::4:
+    90                          ._frame_timer
+    90  0070  215300            	ld	hl,83	;const
+    90  0073  e5                	push	hl
+    90  0074  2eb4              	ld	l,180
+    90  0076  e5                	push	hl
+    90  0077  cd0000            	call	outp_callee
+    90  007a  215200            	ld	hl,82	;const
+    90  007d  e5                	push	hl
+    90  007e  2e04              	ld	l,4
+    90  0080  39                	add	hl,sp
+    90  0081  cd0000            	call	l_gint	;
+    90  0084  2600              	ld	h,0
+    90  0086  e5                	push	hl
+    90  0087  cd0000            	call	outp_callee
+    90  008a  215200            	ld	hl,82	;const
+    90  008d  e5                	push	hl
+    90  008e  2e04              	ld	l,4
+    90  0090  39                	add	hl,sp
+    90  0091  cd0000            	call	l_gint	;
+    90  0094  6c                	ld	l,h
+    90  0095  2600              	ld	h,0
+    90  0097  e5                	push	hl
+    90  0098  cd0000            	call	outp_callee
+    90  009b  215500            	ld	hl,85	;const
+    90  009e  e5                	push	hl
+    90  009f  2e80              	ld	l,128
+    90  00a1  e5                	push	hl
+    90  00a2  cd0000            	call	outp_callee
+    90  00a5  c1                	pop	bc
+    90  00a6  e1                	pop	hl
+    90  00a7  e5                	push	hl
+    90  00a8  c5                	push	bc
+    90  00a9  220000            	ld	(_frame_div),hl
+    90  00ac  c9                	ret
+    90                          
+    90                          
+    90                          	C_LINE	99,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::frame_timer::0::5"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::frame_timer::0::5:
+    99                          
+    99                          ; Function ticks_since flags 0x00000200 __smallc
+    99                          ; unsigned int uint16_tticks_since(unsigned int uint16_t* last)
+    99                          ; parameter 'unsigned int uint16_t* last' at sp+2 size(2)
+    99                          	C_LINE	99,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ticks_since::0::5"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ticks_since::0::5:
+    99                          ._ticks_since
+    99  00ad  cd6500            	call	_ctr2_read
+    99  00b0  e5                	push	hl
+    99  00b1  cd0000            	call	l_gint4sp	;
+    99  00b4  5e                	ld	e,(hl)
+    99  00b5  23                	inc	hl
+    99  00b6  56                	ld	d,(hl)
+    99  00b7  e1                	pop	hl
+    99  00b8  e5                	push	hl
+    99  00b9  d5                	push	de
+    99  00ba  d1                	pop	de
+    99  00bb  eb                	ex	de,hl
+    99  00bc  a7                	and	a
+    99  00bd  ed52              	sbc	hl,de
+    99  00bf  e5                	push	hl
+    99  00c0  cd0000            	call	l_gint6sp	;
+    99  00c3  5e                	ld	e,(hl)
+    99  00c4  23                	inc	hl
+    99  00c5  56                	ld	d,(hl)
+    99  00c6  d5                	push	de
+    99  00c7  cd0000            	call	l_gint4sp	;
+    99  00ca  d1                	pop	de
+    99  00cb  eb                	ex	de,hl
+    99  00cc  a7                	and	a
+    99  00cd  ed52              	sbc	hl,de
+    99  00cf  d2d800            	jp	nc,i_14	;
+    99  00d2  d1                	pop	de
+    99  00d3  2a0000            	ld	hl,(_frame_div)
+    99  00d6  19                	add	hl,de
+    99  00d7  e5                	push	hl
+    99                          .i_14
+    99  00d8  210600            	ld	hl,6	;const
+    99  00db  cd0000            	call	l_gintspsp	;
+    99  00de  cd0000            	call	l_gint4sp	;
+    99  00e1  d1                	pop	de
+    99  00e2  cd0000            	call	l_pint
+    99  00e5  e1                	pop	hl
+    99  00e6  c1                	pop	bc
+    99  00e7  c9                	ret
+    99                          
+    99                          
+    99                          	C_LINE	108,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ticks_since::0::6"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ticks_since::0::6:
+   108                          	C_LINE	110,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ticks_since::0::6"
+   110                          
+   110                          ; Function ym_write flags 0x00000a00 __smallc __naked
+   110                          ; void ym_write()
+   110                          	C_LINE	110,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_write::0::6"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_write::0::6:
+   110                          ._ym_write
+   110  00e8  3a0200                ld   a,(_ym_r)
+   110  00eb  d356                  out  ( 0x56 ),a
+   110  00ed  e3                    ex   (sp),hl
+   110  00ee  e3                    ex   (sp),hl
+   110  00ef  3a0300                ld   a,(_ym_v)
+   110  00f2  d357                  out  ( 0x57 ),a
+   110  00f4  c5                    push bc
+   110  00f5  0607                  ld   b,7
+   110                          ymw_wait:
+   110  00f7  10fe                  djnz ymw_wait
+   110  00f9  c1                    pop  bc
+   110  00fa  c9                    ret
+   110                          	C_LINE	127,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_write::0::7"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_write::0::7:
+   127                          
+   127                          ; Function ym flags 0x00000200 __smallc
+   127                          ; void ym(unsigned char r, unsigned char v)
+   127                          ; parameter 'unsigned char v' at sp+2 size(1)
+   127                          ; parameter 'unsigned char r' at sp+4 size(1)
+   127                          	C_LINE	127,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym::0::7"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym::0::7:
+   127                          ._ym
+   127  00fb  210400            	ld	hl,4	;const
+   127  00fe  39                	add	hl,sp
+   127  00ff  7e                	ld	a,(hl)
+   127  0100  320200            	ld	(_ym_r),a
+   127  0103  210200            	ld	hl,2	;const
+   127  0106  39                	add	hl,sp
+   127  0107  6e                	ld	l,(hl)
+   127  0108  2600              	ld	h,0
+   127  010a  7d                	ld	a,l
+   127  010b  320300            	ld	(_ym_v),a
+   127  010e  cde800            	call	_ym_write
+   127  0111  c9                	ret
+   127                          
+   127                          
+   127                          	C_LINE	130,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym::0::8"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym::0::8:
+   130                          	SECTION	rodata_compiler
+   130                          ._ym_init_tab
+   130  0006  01                	defb	1
+   130  0007  20                	defb	32
+   130  0008  08                	defb	8
+   130  0009  00                	defb	0
+   130  000a  bd                	defb	189
+   130  000b  00                	defb	0
+   130  000c  20                	defb	32
+   130  000d  21                	defb	33
+   130  000e  23                	defb	35
+   130  000f  21                	defb	33
+   130  0010  40                	defb	64
+   130  0011  1c                	defb	28
+   130  0012  43                	defb	67
+   130  0013  04                	defb	4
+   130  0014  60                	defb	96
+   130  0015  f0                	defb	240
+   130  0016  63                	defb	99
+   130  0017  f0                	defb	240
+   130  0018  80                	defb	128
+   130  0019  0f                	defb	15
+   130  001a  83                	defb	131
+   130  001b  0f                	defb	15
+   130  001c  e0                	defb	224
+   130  001d  00                	defb	0
+   130  001e  e3                	defb	227
+   130  001f  00                	defb	0
+   130  0020  c0                	defb	192
+   130  0021  0c                	defb	12
+   130  0022  b0                	defb	176
+   130  0023  00                	defb	0
+   130                          	SECTION	code_compiler
+   130                          	C_LINE	137,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym::0::8"
+   137                          
+   137                          ; Function ym_tone flags 0x00000a08 __smallc __z88dk_fastcall __naked
+   137                          ; void ym_tone(unsigned int ratio)
+   137                          ; parameter 'unsigned int ratio' at sp+2 size(2)
+   137                          	C_LINE	137,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::8"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::8:
+   137                          ._ym_tone
+   137  0112  eb                    ex   de,hl              ; DE = ratio
+   137  0113  7a                    ld   a,d
+   137  0114  b3                    or   e
+   137  0115  2001                  jr   nz,yt_nz
+   137  0117  1b                    dec  de                 ; 0 = 65536 on the 8253
+   137                          yt_nz:
+   137  0118  0600                  ld   b,0                ; block
+   137                          yt_blk:
+   137  011a  213659                ld   hl,0x5936          ; K >> 10
+   137  011d  b7                    or   a
+   137  011e  ed52                  sbc  hl,de
+   137  0120  3810                  jr   c,yt_div
+   137  0122  78                    ld   a,b
+   137  0123  fe07                  cp   7
+   137  0125  2806                  jr   z,yt_max
+   137  0127  04                    inc  b
+   137  0128  eb                    ex   de,hl
+   137  0129  29                    add  hl,hl
+   137  012a  eb                    ex   de,hl
+   137  012b  18ed                  jr   yt_blk
+   137                          yt_max:
+   137  012d  21ff03                ld   hl,1023
+   137  0130  182a                  jr   yt_set
+   137                          yt_div:                     ; HL = K / DE, 10 quotient bits; the low 10 bits of K are 1111100000b
+   137  0132  dde5                  push ix
+   137  0134  dd210000              ld   ix,0
+   137  0138  213659                ld   hl,0x5936
+   137  013b  0e0a                  ld   c,10
+   137                          yt_loop:
+   137  013d  dd29                  add  ix,ix
+   137  013f  79                    ld   a,c
+   137  0140  fe06                  cp   6
+   137  0142  3f                    ccf                     ; CY = next bit of K (1 while c = 10..6)
+   137  0143  ed6a                  adc  hl,hl
+   137  0145  3808                  jr   c,yt_big
+   137  0147  b7                    or   a
+   137  0148  ed52                  sbc  hl,de
+   137  014a  3006                  jr   nc,yt_one
+   137  014c  19                    add  hl,de
+   137  014d  1805                  jr   yt_next
+   137                          yt_big:
+   137  014f  b7                    or   a
+   137  0150  ed52                  sbc  hl,de
+   137                          yt_one:
+   137  0152  dd23                  inc  ix
+   137                          yt_next:
+   137  0154  0d                    dec  c
+   137  0155  20e6                  jr   nz,yt_loop
+   137  0157  dde5                  push ix
+   137  0159  e1                    pop  hl
+   137  015a  dde1                  pop  ix
+   137                          yt_set:
+   137  015c  3ea0                  ld   a,0xa0             ; F-number low
+   137  015e  320200                ld   (_ym_r),a
+   137  0161  7d                    ld   a,l
+   137  0162  320300                ld   (_ym_v),a
+   137  0165  c5                    push bc
+   137  0166  e5                    push hl
+   137  0167  cde800                call _ym_write
+   137  016a  e1                    pop  hl
+   137  016b  c1                    pop  bc
+   137  016c  78                    ld   a,b                ; key on, block, F-number high
+   137  016d  87                    add  a,a
+   137  016e  87                    add  a,a
+   137  016f  b4                    or   h
+   137  0170  f620                  or   0x20
+   137  0172  320300                ld   (_ym_v),a
+   137  0175  3eb0                  ld   a,0xb0
+   137  0177  320200                ld   (_ym_r),a
+   137  017a  c3e800                jp   _ym_write
+   137                          	C_LINE	215,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::9"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::9:
+   215                          	C_LINE	216,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::9"
+   216                          	C_LINE	217,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::9"
+   217                          	C_LINE	218,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::9"
+   218                          	C_LINE	220,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ym_tone::0::9"
+   220                          
+   220                          ; Function tone_play flags 0x00000200 __smallc
+   220                          ; void tone_play(unsigned int ratio, unsigned char len)
+   220                          ; parameter 'unsigned char len' at sp+2 size(1)
+   220                          ; parameter 'unsigned int ratio' at sp+4 size(2)
+   220                          	C_LINE	220,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_play::0::9"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_play::0::9:
+   220                          ._tone_play
+   220  017d  cd0000            	call	l_gint4sp	;
+   220  0180  cd1201            	call	_ym_tone
+   220  0183  2a0700            	ld	hl,(_tone_left)
+   220  0186  e5                	push	hl
+   220  0187  210400            	ld	hl,4	;const
+   220  018a  39                	add	hl,sp
+   220  018b  6e                	ld	l,(hl)
+   220  018c  2600              	ld	h,0
+   220  018e  113500            	ld	de,53
+   220  0191  cd0000            	call	l_mult
+   220  0194  d1                	pop	de
+   220  0195  19                	add	hl,de
+   220  0196  220700            	ld	(_tone_left),hl
+   220  0199  c9                	ret
+   220                          
+   220                          
+   220                          	C_LINE	225,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_play::0::10"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_play::0::10:
+   225                          
+   225                          ; Function plat_tone flags 0x00000200 __smallc
+   225                          ; void plat_tone(unsigned int ratio, unsigned char len)
+   225                          ; parameter 'unsigned char len' at sp+2 size(1)
+   225                          ; parameter 'unsigned int ratio' at sp+4 size(2)
+   225                          	C_LINE	225,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_tone::0::10"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_tone::0::10:
+   225                          ._plat_tone
+   225  019a  3a0400            	ld	a,(_tone_on)
+   225  019d  a7                	and	a
+   225  019e  c2c601            	jp	nz,i_16	;
+   225  01a1  210000            	ld	hl,0	;const
+   225  01a4  220700            	ld	(_tone_left),hl
+   225  01a7  210400            	ld	hl,4	;const
+   225  01aa  cd0000            	call	l_gintspsp	;
+   225  01ad  210400            	ld	hl,4	;const
+   225  01b0  39                	add	hl,sp
+   225  01b1  6e                	ld	l,(hl)
+   225  01b2  2600              	ld	h,0
+   225  01b4  e5                	push	hl
+   225  01b5  cd7d01            	call	_tone_play
+   225  01b8  c1                	pop	bc
+   225  01b9  c1                	pop	bc
+   225  01ba  cd6500            	call	_ctr2_read
+   225  01bd  220900            	ld	(_tone_last),hl
+   225  01c0  3e01              	ld	a,1
+   225  01c2  320400            	ld	(_tone_on),a
+   225  01c5  c9                	ret
+   225                          .i_16
+   225  01c6  3a0500            	ld	a,(_tq_n)
+   225  01c9  d608              	sub	8
+   225  01cb  d22002            	jp	nc,i_18	;
+   225  01ce  2a0600            	ld	hl,(_tq_head)
+   225  01d1  2600              	ld	h,0
+   225  01d3  eb                	ex	de,hl
+   225  01d4  2a0500            	ld	hl,(_tq_n)
+   225  01d7  2600              	ld	h,0
+   225  01d9  19                	add	hl,de
+   225  01da  7d                	ld	a,l
+   225  01db  e607              	and	7
+   225  01dd  6f                	ld	l,a
+   225  01de  2600              	ld	h,0
+   225  01e0  3b                	dec	sp
+   225  01e1  7d                	ld	a,l
+   225  01e2  e1                	pop	hl
+   225  01e3  6f                	ld	l,a
+   225  01e4  e5                	push	hl
+   225  01e5  210b00            	ld	hl,_tq
+   225  01e8  e5                	push	hl
+   225  01e9  210200            	ld	hl,2	;const
+   225  01ec  39                	add	hl,sp
+   225  01ed  6e                	ld	l,(hl)
+   225  01ee  2600              	ld	h,0
+   225  01f0  44                	ld	b,h
+   225  01f1  4d                	ld	c,l
+   225  01f2  09                	add	hl,bc
+   225  01f3  09                	add	hl,bc
+   225  01f4  d1                	pop	de
+   225  01f5  19                	add	hl,de
+   225  01f6  eb                	ex	de,hl
+   225  01f7  cd0000            	call	l_gint5sp
+   225  01fa  cd0000            	call	l_pint
+   225  01fd  210b00            	ld	hl,_tq
+   225  0200  e5                	push	hl
+   225  0201  210200            	ld	hl,2	;const
+   225  0204  39                	add	hl,sp
+   225  0205  6e                	ld	l,(hl)
+   225  0206  2600              	ld	h,0
+   225  0208  44                	ld	b,h
+   225  0209  4d                	ld	c,l
+   225  020a  09                	add	hl,bc
+   225  020b  09                	add	hl,bc
+   225  020c  d1                	pop	de
+   225  020d  19                	add	hl,de
+   225  020e  23                	inc	hl
+   225  020f  23                	inc	hl
+   225  0210  eb                	ex	de,hl
+   225  0211  210300            	ld	hl,3	;const
+   225  0214  39                	add	hl,sp
+   225  0215  7e                	ld	a,(hl)
+   225  0216  12                	ld	(de),a
+   225  0217  210500            	ld	hl,_tq_n
+   225  021a  7e                	ld	a,(hl)
+   225  021b  34                	inc	(hl)
+   225  021c  6f                	ld	l,a
+   225  021d  2600              	ld	h,0
+   225  021f  33                	inc	sp
+   225                          .i_17
+   225  0220  c9                	ret
+   225                          
+   225                          
+   225                          	C_LINE	239,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_tone::0::13"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_tone::0::13:
+   239                          
+   239                          ; Function tone_poll flags 0x00000200 __smallc
+   239                          ; void tone_poll()
+   239                          	C_LINE	239,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::13"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::13:
+   239                          ._tone_poll
+   239  0221  3a0400            	ld	a,(_tone_on)
+   239  0224  a7                	and	a
+   239  0225  c22902            	jp	nz,i_19	;
+   239  0228  c9                	ret
+   239                          
+   239                          
+   239                          .i_19
+   239  0229  2a0700            	ld	hl,(_tone_left)
+   239  022c  e5                	push	hl
+   239  022d  210900            	ld	hl,_tone_last
+   239  0230  e5                	push	hl
+   239  0231  cdad00            	call	_ticks_since
+   239  0234  c1                	pop	bc
+   239  0235  d1                	pop	de
+   239  0236  eb                	ex	de,hl
+   239  0237  a7                	and	a
+   239  0238  ed52              	sbc	hl,de
+   239  023a  220700            	ld	(_tone_left),hl
+   239                          .i_20
+   239  023d  2a0700            	ld	hl,(_tone_left)
+   239  0240  7c                	ld	a,h
+   239  0241  07                	rlca
+   239  0242  3804              	jr	c,ASMPC+6
+   239  0244  b5                	or	l
+   239  0245  2001              	jr	nz,ASMPC+3
+   239  0247  37                	scf
+   239  0248  d0                	ret	nc
+   239  0249  3a0500            	ld	a,(_tq_n)
+   239  024c  a7                	and	a
+   239  024d  c26102            	jp	nz,i_22	;
+   239  0250  af                	xor	a
+   239  0251  320400            	ld	(_tone_on),a
+   239  0254  21b000            	ld	hl,176	;const
+   239  0257  e5                	push	hl
+   239  0258  2e00              	ld	l,0
+   239  025a  e5                	push	hl
+   239  025b  cdfb00            	call	_ym
+   239  025e  c1                	pop	bc
+   239  025f  c1                	pop	bc
+   239  0260  c9                	ret
+   239                          
+   239                          
+   239                          .i_22
+   239  0261  210b00            	ld	hl,_tq
+   239  0264  e5                	push	hl
+   239  0265  2a0600            	ld	hl,(_tq_head)
+   239  0268  2600              	ld	h,0
+   239  026a  44                	ld	b,h
+   239  026b  4d                	ld	c,l
+   239  026c  09                	add	hl,bc
+   239  026d  09                	add	hl,bc
+   239  026e  d1                	pop	de
+   239  026f  19                	add	hl,de
+   239  0270  5e                	ld	e,(hl)
+   239  0271  23                	inc	hl
+   239  0272  56                	ld	d,(hl)
+   239  0273  d5                	push	de
+   239  0274  210b00            	ld	hl,_tq
+   239  0277  e5                	push	hl
+   239  0278  2a0600            	ld	hl,(_tq_head)
+   239  027b  2600              	ld	h,0
+   239  027d  44                	ld	b,h
+   239  027e  4d                	ld	c,l
+   239  027f  09                	add	hl,bc
+   239  0280  09                	add	hl,bc
+   239  0281  d1                	pop	de
+   239  0282  19                	add	hl,de
+   239  0283  23                	inc	hl
+   239  0284  23                	inc	hl
+   239  0285  6e                	ld	l,(hl)
+   239  0286  2600              	ld	h,0
+   239  0288  e5                	push	hl
+   239  0289  cd7d01            	call	_tone_play
+   239  028c  c1                	pop	bc
+   239  028d  c1                	pop	bc
+   239  028e  2a0600            	ld	hl,(_tq_head)
+   239  0291  2600              	ld	h,0
+   239  0293  23                	inc	hl
+   239  0294  7d                	ld	a,l
+   239  0295  e607              	and	7
+   239  0297  6f                	ld	l,a
+   239  0298  2600              	ld	h,0
+   239  029a  320600            	ld	(_tq_head),a
+   239  029d  210500            	ld	hl,_tq_n
+   239  02a0  7e                	ld	a,(hl)
+   239  02a1  35                	dec	(hl)
+   239  02a2  c33d02            	jp	i_20	;EOS
+   239                          .i_21
+   239  02a5  c9                	ret
+   239                          
+   239                          
+   239                          	C_LINE	258,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16:
+   258                          	C_LINE	259,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16"
+   259                          	C_LINE	260,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16"
+   260                          	C_LINE	261,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16"
+   261                          	C_LINE	263,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16"
+   263                          	C_LINE	265,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::tone_poll::0::16"
+   265                          
+   265                          ; Function hold_dir flags 0x00000200 __smallc
+   265                          ; void hold_dir(unsigned char uint8_t* dir, unsigned char uint8_t* frames, unsigned char mask)
+   265                          ; parameter 'unsigned char mask' at sp+2 size(1)
+   265                          ; parameter 'unsigned char uint8_t* frames' at sp+4 size(2)
+   265                          ; parameter 'unsigned char uint8_t* dir' at sp+6 size(2)
+   265                          	C_LINE	265,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::hold_dir::0::16"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::hold_dir::0::16:
+   265                          ._hold_dir
+   265  02a6  cd0000            	call	l_gint6sp	;
+   265  02a9  7e                	ld	a,(hl)
+   265  02aa  210200            	ld	hl,2	;const
+   265  02ad  39                	add	hl,sp
+   265  02ae  be                	cp	(hl)
+   265  02af  c2d502            	jp	nz,i_24	;
+   265  02b2  cd0000            	call	l_gint4sp	;
+   265  02b5  7e                	ld	a,(hl)
+   265  02b6  a7                	and	a
+   265  02b7  cad502            	jp	z,i_24	;
+   265                          .i_25_i_24
+   265  02ba  cd0000            	call	l_gint4sp	;
+   265  02bd  7e                	ld	a,(hl)
+   265  02be  c604              	add	a,4
+   265  02c0  77                	ld	(hl),a
+   265  02c1  cd0000            	call	l_gint4sp	;
+   265  02c4  3e08              	ld	a,8
+   265  02c6  96                	sub	(hl)
+   265  02c7  d2ee02            	jp	nc,i_26	;
+   265  02ca  210400            	ld	hl,4	;const
+   265  02cd  39                	add	hl,sp
+   265  02ce  5e                	ld	e,(hl)
+   265  02cf  23                	inc	hl
+   265  02d0  56                	ld	d,(hl)
+   265  02d1  3e08              	ld	a,8
+   265  02d3  12                	ld	(de),a
+   265  02d4  c9                	ret
+   265                          .i_23
+   265  02d5  210600            	ld	hl,6	;const
+   265  02d8  cd0000            	call	l_gintspsp	;
+   265  02db  210400            	ld	hl,4	;const
+   265  02de  39                	add	hl,sp
+   265  02df  7e                	ld	a,(hl)
+   265  02e0  d1                	pop	de
+   265  02e1  12                	ld	(de),a
+   265  02e2  210400            	ld	hl,4	;const
+   265  02e5  39                	add	hl,sp
+   265  02e6  5e                	ld	e,(hl)
+   265  02e7  23                	inc	hl
+   265  02e8  56                	ld	d,(hl)
+   265  02e9  210400            	ld	hl,4	;const
+   265  02ec  7d                	ld	a,l
+   265  02ed  12                	ld	(de),a
+   265                          .i_27
+   265  02ee  c9                	ret
+   265                          
+   265                          
+   265                          	C_LINE	275,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::hold_dir::0::19"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::hold_dir::0::19:
+   275                          
+   275                          ; Function kb_key flags 0x00000200 __smallc
+   275                          ; void kb_key(unsigned char c)
+   275                          ; parameter 'unsigned char c' at sp+2 size(1)
+   275                          	C_LINE	275,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_key::0::19"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_key::0::19:
+   275                          ._kb_key
+   275  02ef  210200            	ld	hl,2	;const
+   275  02f2  39                	add	hl,sp
+   275  02f3  3e60              	ld	a,96
+   275  02f5  be                	cp	(hl)
+   275  02f6  d20f03            	jp	nc,i_28	;
+   275  02f9  210200            	ld	hl,2	;const
+   275  02fc  39                	add	hl,sp
+   275  02fd  5e                	ld	e,(hl)
+   275  02fe  1600              	ld	d,0
+   275  0300  217a00            	ld	hl,122	;const
+   275  0303  a7                	and	a
+   275  0304  ed52              	sbc	hl,de
+   275  0306  3f                	ccf
+   275  0307  d20f03            	jp	nc,i_28	;
+   275  030a  210100            	ld	hl,1	;const
+   275  030d  1803              	jr	i_29
+   275                          .i_28
+   275  030f  210000            	ld	hl,0	;const
+   275                          .i_29
+   275  0312  d22303            	jp	nc,i_30	;
+   275  0315  210200            	ld	hl,2	;const
+   275  0318  39                	add	hl,sp
+   275  0319  6e                	ld	l,(hl)
+   275  031a  01e0ff            	ld	bc,-32
+   275  031d  09                	add	hl,bc
+   275  031e  2600              	ld	h,0
+   275  0320  c32a03            	jp	i_31	;
+   275                          .i_30
+   275  0323  210200            	ld	hl,2	;const
+   275  0326  39                	add	hl,sp
+   275  0327  6e                	ld	l,(hl)
+   275  0328  2600              	ld	h,0
+   275                          .i_31
+   275  032a  2600              	ld	h,0
+   275  032c  3b                	dec	sp
+   275  032d  7d                	ld	a,l
+   275  032e  e1                	pop	hl
+   275  032f  6f                	ld	l,a
+   275  0330  e5                	push	hl
+   275  0331  210300            	ld	hl,3	;const
+   275  0334  39                	add	hl,sp
+   275  0335  6e                	ld	l,(hl)
+   275  0336  2600              	ld	h,0
+   275                          .i_34
+   275  0338  7d                	ld	a,l
+   275  0339  fec1              	cp	+(193% 256)
+   275  033b  ca8c03            	jp	z,i_35	;
+   275  033e  fe05              	cp	+(5% 256)
+   275  0340  ca8c03            	jp	z,i_36	;
+   275  0343  fec2              	cp	+(194% 256)
+   275  0345  caa003            	jp	z,i_37	;
+   275  0348  fe18              	cp	+(24% 256)
+   275  034a  caa003            	jp	z,i_38	;
+   275  034d  fec3              	cp	+(195% 256)
+   275  034f  cab403            	jp	z,i_39	;
+   275  0352  fe04              	cp	+(4% 256)
+   275  0354  cab403            	jp	z,i_40	;
+   275  0357  fec4              	cp	+(196% 256)
+   275  0359  cac803            	jp	z,i_41	;
+   275  035c  fe13              	cp	+(19% 256)
+   275  035e  cac803            	jp	z,i_42	;
+   275  0361  fe20              	cp	+(32% 256)
+   275  0363  cadc03            	jp	z,i_43	;
+   275  0366  fe0d              	cp	+(13% 256)
+   275  0368  cae503            	jp	z,i_44	;
+   275  036b  fe03              	cp	+(3% 256)
+   275  036d  caee03            	jp	z,i_45	;
+   275  0370  fe1b              	cp	+(27% 256)
+   275  0372  caf303            	jp	z,i_46	;
+   275  0375  fe84              	cp	+(132% 256)
+   275  0377  caf303            	jp	z,i_47	;
+   275  037a  fe85              	cp	+(133% 256)
+   275  037c  caf303            	jp	z,i_48	;
+   275  037f  fe08              	cp	+(8% 256)
+   275  0381  ca0104            	jp	z,i_49	;
+   275  0384  fe7f              	cp	+(127% 256)
+   275  0386  ca0104            	jp	z,i_50	;
+   275  0389  c30f04            	jp	i_33	;EOS
+   275                          .i_36
+   275  038c  212300            	ld	hl,_kd_a
+   275  038f  e5                	push	hl
+   275  0390  212400            	ld	hl,_kf_a
+   275  0393  e5                	push	hl
+   275  0394  210100            	ld	hl,1	;const
+   275  0397  e5                	push	hl
+   275  0398  cda602            	call	_hold_dir
+   275  039b  c1                	pop	bc
+   275  039c  c1                	pop	bc
+   275  039d  c1                	pop	bc
+   275  039e  33                	inc	sp
+   275  039f  c9                	ret
+   275                          
+   275                          
+   275                          .i_38
+   275  03a0  212300            	ld	hl,_kd_a
+   275  03a3  e5                	push	hl
+   275  03a4  212400            	ld	hl,_kf_a
+   275  03a7  e5                	push	hl
+   275  03a8  210200            	ld	hl,2	;const
+   275  03ab  e5                	push	hl
+   275  03ac  cda602            	call	_hold_dir
+   275  03af  c1                	pop	bc
+   275  03b0  c1                	pop	bc
+   275  03b1  c1                	pop	bc
+   275  03b2  33                	inc	sp
+   275  03b3  c9                	ret
+   275                          
+   275                          
+   275                          .i_40
+   275  03b4  212300            	ld	hl,_kd_a
+   275  03b7  e5                	push	hl
+   275  03b8  212400            	ld	hl,_kf_a
+   275  03bb  e5                	push	hl
+   275  03bc  210400            	ld	hl,4	;const
+   275  03bf  e5                	push	hl
+   275  03c0  cda602            	call	_hold_dir
+   275  03c3  c1                	pop	bc
+   275  03c4  c1                	pop	bc
+   275  03c5  c1                	pop	bc
+   275  03c6  33                	inc	sp
+   275  03c7  c9                	ret
+   275                          
+   275                          
+   275                          .i_42
+   275  03c8  212300            	ld	hl,_kd_a
+   275  03cb  e5                	push	hl
+   275  03cc  212400            	ld	hl,_kf_a
+   275  03cf  e5                	push	hl
+   275  03d0  210800            	ld	hl,8	;const
+   275  03d3  e5                	push	hl
+   275  03d4  cda602            	call	_hold_dir
+   275  03d7  c1                	pop	bc
+   275  03d8  c1                	pop	bc
+   275  03d9  c1                	pop	bc
+   275  03da  33                	inc	sp
+   275  03db  c9                	ret
+   275                          
+   275                          
+   275                          .i_43
+   275  03dc  210100            	ld	hl,1	;const
+   275  03df  7d                	ld	a,l
+   275  03e0  322700            	ld	(_k_space),a
+   275  03e3  33                	inc	sp
+   275  03e4  c9                	ret
+   275                          
+   275                          
+   275                          .i_44
+   275  03e5  210100            	ld	hl,1	;const
+   275  03e8  7d                	ld	a,l
+   275  03e9  322800            	ld	(_k_cr),a
+   275  03ec  33                	inc	sp
+   275  03ed  c9                	ret
+   275                          
+   275                          
+   275                          .i_45
+   275  03ee  cde407            	call	_plat_exit
+   275  03f1  33                	inc	sp
+   275  03f2  c9                	ret
+   275                          
+   275                          
+   275                          .i_48
+   275  03f3  3e1b              	ld	a,27
+   275  03f5  322a00            	ld	(_k_char),a
+   275  03f8  210300            	ld	hl,3	;const
+   275  03fb  7d                	ld	a,l
+   275  03fc  322b00            	ld	(_k_char_f),a
+   275  03ff  33                	inc	sp
+   275  0400  c9                	ret
+   275                          
+   275                          
+   275                          .i_50
+   275  0401  3e08              	ld	a,8
+   275  0403  322a00            	ld	(_k_char),a
+   275  0406  210300            	ld	hl,3	;const
+   275  0409  7d                	ld	a,l
+   275  040a  322b00            	ld	(_k_char_f),a
+   275  040d  33                	inc	sp
+   275  040e  c9                	ret
+   275                          
+   275                          
+   275                          .i_33
+   275  040f  e1                	pop	hl
+   275  0410  e5                	push	hl
+   275  0411  2600              	ld	h,0
+   275  0413  114100            	ld	de,65
+   275  0416  a7                	and	a
+   275  0417  ed52              	sbc	hl,de
+   275  0419  da2a04            	jp	c,i_52	;
+   275  041c  e1                	pop	hl
+   275  041d  e5                	push	hl
+   275  041e  2600              	ld	h,0
+   275  0420  115a00            	ld	de,90
+   275  0423  eb                	ex	de,hl
+   275  0424  a7                	and	a
+   275  0425  ed52              	sbc	hl,de
+   275  0427  d22c04            	jp	nc,i_51	;
+   275                          .i_52
+   275  042a  33                	inc	sp
+   275  042b  c9                	ret
+   275                          
+   275                          
+   275                          .i_51
+   275  042c  e1                	pop	hl
+   275  042d  e5                	push	hl
+   275  042e  7d                	ld	a,l
+   275  042f  322a00            	ld	(_k_char),a
+   275  0432  3e03              	ld	a,3
+   275  0434  322b00            	ld	(_k_char_f),a
+   275  0437  e1                	pop	hl
+   275  0438  e5                	push	hl
+   275  0439  2600              	ld	h,0
+   275                          .i_56
+   275  043b  7d                	ld	a,l
+   275  043c  fe57              	cp	+(87% 256)
+   275  043e  ca5804            	jp	z,i_57	;
+   275  0441  fe53              	cp	+(83% 256)
+   275  0443  ca6d04            	jp	z,i_58	;
+   275  0446  fe44              	cp	+(68% 256)
+   275  0448  ca8204            	jp	z,i_59	;
+   275  044b  fe41              	cp	+(65% 256)
+   275  044d  ca9704            	jp	z,i_60	;
+   275  0450  fe45              	cp	+(69% 256)
+   275  0452  caac04            	jp	z,i_61	;
+   275  0455  c3b104            	jp	i_55	;EOS
+   275                          .i_57
+   275  0458  212500            	ld	hl,_kd_b
+   275  045b  e5                	push	hl
+   275  045c  212600            	ld	hl,_kf_b
+   275  045f  e5                	push	hl
+   275  0460  210100            	ld	hl,1	;const
+   275  0463  e5                	push	hl
+   275  0464  cda602            	call	_hold_dir
+   275  0467  c1                	pop	bc
+   275  0468  c1                	pop	bc
+   275  0469  c1                	pop	bc
+   275  046a  c3b104            	jp	i_55	;EOS
+   275                          .i_58
+   275  046d  212500            	ld	hl,_kd_b
+   275  0470  e5                	push	hl
+   275  0471  212600            	ld	hl,_kf_b
+   275  0474  e5                	push	hl
+   275  0475  210200            	ld	hl,2	;const
+   275  0478  e5                	push	hl
+   275  0479  cda602            	call	_hold_dir
+   275  047c  c1                	pop	bc
+   275  047d  c1                	pop	bc
+   275  047e  c1                	pop	bc
+   275  047f  c3b104            	jp	i_55	;EOS
+   275                          .i_59
+   275  0482  212500            	ld	hl,_kd_b
+   275  0485  e5                	push	hl
+   275  0486  212600            	ld	hl,_kf_b
+   275  0489  e5                	push	hl
+   275  048a  210400            	ld	hl,4	;const
+   275  048d  e5                	push	hl
+   275  048e  cda602            	call	_hold_dir
+   275  0491  c1                	pop	bc
+   275  0492  c1                	pop	bc
+   275  0493  c1                	pop	bc
+   275  0494  c3b104            	jp	i_55	;EOS
+   275                          .i_60
+   275  0497  212500            	ld	hl,_kd_b
+   275  049a  e5                	push	hl
+   275  049b  212600            	ld	hl,_kf_b
+   275  049e  e5                	push	hl
+   275  049f  210800            	ld	hl,8	;const
+   275  04a2  e5                	push	hl
+   275  04a3  cda602            	call	_hold_dir
+   275  04a6  c1                	pop	bc
+   275  04a7  c1                	pop	bc
+   275  04a8  c1                	pop	bc
+   275  04a9  c3b104            	jp	i_55	;EOS
+   275                          .i_61
+   275  04ac  3e01              	ld	a,1
+   275  04ae  322900            	ld	(_k_fire_b),a
+   275                          .i_55
+   275  04b1  33                	inc	sp
+   275  04b2  c9                	ret
+   275                          
+   275                          
+   275                          	C_LINE	300,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_key::0::22"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_key::0::22:
+   300                          
+   300                          ; Function kb_poll flags 0x00000200 __smallc
+   300                          ; void kb_poll()
+   300                          	C_LINE	300,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_poll::0::22"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_poll::0::22:
+   300                          ._kb_poll
+   300  04b3  3b                	dec	sp
+   300  04b4  3b                	dec	sp
+   300  04b5  e1                	pop	hl
+   300  04b6  2e00              	ld	l,0
+   300  04b8  e5                	push	hl
+   300  04b9  210100            	ld	hl,1	;const
+   300  04bc  cd0000            	call	inp_fastcall
+   300  04bf  7d                	ld	a,l
+   300  04c0  e601              	and	1
+   300  04c2  6f                	ld	l,a
+   300  04c3  2600              	ld	h,0
+   300  04c5  a7                	and	a
+   300  04c6  cacb04            	jp	z,i_62	;
+   300  04c9  c1                	pop	bc
+   300  04ca  c9                	ret
+   300                          
+   300                          
+   300                          .i_62
+   300  04cb  210100            	ld	hl,1	;const
+   300  04ce  39                	add	hl,sp
+   300  04cf  e5                	push	hl
+   300  04d0  210200            	ld	hl,2	;const
+   300  04d3  cd0000            	call	inp_fastcall
+   300  04d6  cd0000            	call	l_com
+   300  04d9  d1                	pop	de
+   300  04da  7d                	ld	a,l
+   300  04db  12                	ld	(de),a
+   300  04dc  210100            	ld	hl,1	;const
+   300  04df  e5                	push	hl
+   300  04e0  2e03              	ld	l,3
+   300  04e2  e5                	push	hl
+   300  04e3  cd0000            	call	outp_callee
+   300                          .i_63
+   300  04e6  210100            	ld	hl,1	;const
+   300  04e9  cd0000            	call	inp_fastcall
+   300  04ec  7d                	ld	a,l
+   300  04ed  e601              	and	1
+   300  04ef  c2ff04            	jp	nz,i_65	;
+   300  04f2  210000            	ld	hl,0	;const
+   300  04f5  39                	add	hl,sp
+   300  04f6  35                	dec	(hl)
+   300  04f7  7e                	ld	a,(hl)
+   300  04f8  a7                	and	a
+   300  04f9  caff04            	jp	z,i_65	;
+   300  04fc  c3e604            	jp	i_63	;EOS
+   300                          .i_64
+   300  04ff  210100            	ld	hl,1	;const
+   300  0502  e5                	push	hl
+   300  0503  2e02              	ld	l,2
+   300  0505  e5                	push	hl
+   300  0506  cd0000            	call	outp_callee
+   300  0509  e1                	pop	hl
+   300  050a  e5                	push	hl
+   300  050b  6c                	ld	l,h
+   300  050c  2600              	ld	h,0
+   300  050e  e5                	push	hl
+   300  050f  cdef02            	call	_kb_key
+   300  0512  c1                	pop	bc
+   300  0513  c1                	pop	bc
+   300  0514  c9                	ret
+   300                          
+   300                          
+   300                          	C_LINE	310,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_poll::0::23"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_poll::0::23:
+   310                          
+   310                          ; Function kb_age flags 0x00000200 __smallc
+   310                          ; void kb_age()
+   310                          	C_LINE	310,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_age::0::23"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_age::0::23:
+   310                          ._kb_age
+   310  0515  3a2400            	ld	a,(_kf_a)
+   310  0518  a7                	and	a
+   310  0519  ca2105            	jp	z,i_67	;
+   310  051c  212400            	ld	hl,_kf_a
+   310  051f  7e                	ld	a,(hl)
+   310  0520  35                	dec	(hl)
+   310                          .i_67
+   310  0521  3a2600            	ld	a,(_kf_b)
+   310  0524  a7                	and	a
+   310  0525  ca2d05            	jp	z,i_68	;
+   310  0528  212600            	ld	hl,_kf_b
+   310  052b  7e                	ld	a,(hl)
+   310  052c  35                	dec	(hl)
+   310                          .i_68
+   310  052d  3a2700            	ld	a,(_k_space)
+   310  0530  a7                	and	a
+   310  0531  ca3905            	jp	z,i_69	;
+   310  0534  212700            	ld	hl,_k_space
+   310  0537  7e                	ld	a,(hl)
+   310  0538  35                	dec	(hl)
+   310                          .i_69
+   310  0539  3a2800            	ld	a,(_k_cr)
+   310  053c  a7                	and	a
+   310  053d  ca4505            	jp	z,i_70	;
+   310  0540  212800            	ld	hl,_k_cr
+   310  0543  7e                	ld	a,(hl)
+   310  0544  35                	dec	(hl)
+   310                          .i_70
+   310  0545  3a2900            	ld	a,(_k_fire_b)
+   310  0548  a7                	and	a
+   310  0549  ca5105            	jp	z,i_71	;
+   310  054c  212900            	ld	hl,_k_fire_b
+   310  054f  7e                	ld	a,(hl)
+   310  0550  35                	dec	(hl)
+   310                          .i_71
+   310  0551  3a2b00            	ld	a,(_k_char_f)
+   310  0554  a7                	and	a
+   310  0555  ca6f05            	jp	z,i_73	;
+   310  0558  2a2b00            	ld	hl,(_k_char_f)
+   310  055b  2600              	ld	h,0
+   310  055d  2b                	dec	hl
+   310  055e  7d                	ld	a,l
+   310  055f  322b00            	ld	(_k_char_f),a
+   310  0562  cd0000            	call	l_lneg
+   310  0565  d26f05            	jp	nc,i_73	;
+   310                          .i_74_i_73
+   310  0568  210000            	ld	hl,0	;const
+   310  056b  7d                	ld	a,l
+   310  056c  322a00            	ld	(_k_char),a
+   310                          .i_72
+   310  056f  c9                	ret
+   310                          
+   310                          
+   310                          	C_LINE	320,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_age::0::24"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::kb_age::0::24:
+   320                          
+   320                          ; Function plat_keys_a flags 0x00000200 __smallc
+   320                          ; unsigned char uint8_tplat_keys_a()
+   320                          	C_LINE	320,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_a::0::24"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_a::0::24:
+   320                          ._plat_keys_a
+   320  0570  3a2400            	ld	a,(_kf_a)
+   320  0573  a7                	and	a
+   320  0574  ca7f05            	jp	z,i_75	;
+   320  0577  2a2300            	ld	hl,(_kd_a)
+   320  057a  2600              	ld	h,0
+   320  057c  c38205            	jp	i_76	;
+   320                          .i_75
+   320  057f  210000            	ld	hl,0	;const
+   320                          .i_76
+   320  0582  2600              	ld	h,0
+   320  0584  3b                	dec	sp
+   320  0585  7d                	ld	a,l
+   320  0586  e1                	pop	hl
+   320  0587  6f                	ld	l,a
+   320  0588  e5                	push	hl
+   320  0589  cdb304            	call	_kb_poll
+   320  058c  3a0000            	ld	a,(_kbd_alt_fire)
+   320  058f  a7                	and	a
+   320  0590  ca9b05            	jp	z,i_78	;
+   320  0593  2a2800            	ld	hl,(_k_cr)
+   320  0596  2600              	ld	h,0
+   320  0598  c3a005            	jp	i_79	;
+   320                          .i_78
+   320  059b  2a2700            	ld	hl,(_k_space)
+   320  059e  2600              	ld	h,0
+   320                          .i_79
+   320  05a0  7c                	ld	a,h
+   320  05a1  b5                	or	l
+   320  05a2  caad05            	jp	z,i_77	;
+   320  05a5  210000            	ld	hl,0	;const
+   320  05a8  39                	add	hl,sp
+   320  05a9  7e                	ld	a,(hl)
+   320  05aa  f610              	or	16
+   320  05ac  77                	ld	(hl),a
+   320                          .i_77
+   320  05ad  e1                	pop	hl
+   320  05ae  e5                	push	hl
+   320  05af  2600              	ld	h,0
+   320  05b1  33                	inc	sp
+   320  05b2  c9                	ret
+   320                          
+   320                          
+   320                          	C_LINE	327,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_a::0::25"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_a::0::25:
+   327                          
+   327                          ; Function plat_keys_b flags 0x00000200 __smallc
+   327                          ; unsigned char uint8_tplat_keys_b()
+   327                          	C_LINE	327,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_b::0::25"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_b::0::25:
+   327                          ._plat_keys_b
+   327  05b3  3a2600            	ld	a,(_kf_b)
+   327  05b6  a7                	and	a
+   327  05b7  cac205            	jp	z,i_80	;
+   327  05ba  2a2500            	ld	hl,(_kd_b)
+   327  05bd  2600              	ld	h,0
+   327  05bf  c3c505            	jp	i_81	;
+   327                          .i_80
+   327  05c2  210000            	ld	hl,0	;const
+   327                          .i_81
+   327  05c5  2600              	ld	h,0
+   327  05c7  3b                	dec	sp
+   327  05c8  7d                	ld	a,l
+   327  05c9  e1                	pop	hl
+   327  05ca  6f                	ld	l,a
+   327  05cb  e5                	push	hl
+   327  05cc  cdb304            	call	_kb_poll
+   327  05cf  3a2900            	ld	a,(_k_fire_b)
+   327  05d2  a7                	and	a
+   327  05d3  cade05            	jp	z,i_82	;
+   327  05d6  210000            	ld	hl,0	;const
+   327  05d9  39                	add	hl,sp
+   327  05da  7e                	ld	a,(hl)
+   327  05db  f610              	or	16
+   327  05dd  77                	ld	(hl),a
+   327                          .i_82
+   327  05de  e1                	pop	hl
+   327  05df  e5                	push	hl
+   327  05e0  2600              	ld	h,0
+   327  05e2  33                	inc	sp
+   327  05e3  c9                	ret
+   327                          
+   327                          
+   327                          	C_LINE	334,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_b::0::26"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_keys_b::0::26:
+   334                          
+   334                          ; Function plat_key_char flags 0x00000200 __smallc
+   334                          ; unsigned char uint8_tplat_key_char()
+   334                          	C_LINE	334,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_key_char::0::26"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_key_char::0::26:
+   334                          ._plat_key_char
+   334  05e4  cdb304            	call	_kb_poll
+   334  05e7  2a2a00            	ld	hl,(_k_char)
+   334  05ea  2600              	ld	h,0
+   334  05ec  c9                	ret
+   334                          
+   334                          
+   334                          	C_LINE	339,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_key_char::0::27"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_key_char::0::27:
+   339                          
+   339                          ; Function plat_joy flags 0x00000200 __smallc
+   339                          ; unsigned char uint8_tplat_joy(unsigned char n)
+   339                          ; parameter 'unsigned char n' at sp+2 size(1)
+   339                          	C_LINE	339,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_joy::0::27"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_joy::0::27:
+   339                          ._plat_joy
+   339  05ed  3b                	dec	sp
+   339  05ee  e1                	pop	hl
+   339  05ef  2e00              	ld	l,0
+   339  05f1  e5                	push	hl
+   339  05f2  3b                	dec	sp
+   339  05f3  3a0000            	ld	a,(_joy_type)
+   339  05f6  a7                	and	a
+   339  05f7  ca0306            	jp	z,i_84	;
+   339  05fa  210400            	ld	hl,4	;const
+   339  05fd  39                	add	hl,sp
+   339  05fe  7e                	ld	a,(hl)
+   339  05ff  a7                	and	a
+   339  0600  ca0806            	jp	z,i_83	;
+   339                          .i_84
+   339  0603  210000            	ld	hl,0	;const
+   339  0606  c1                	pop	bc
+   339  0607  c9                	ret
+   339                          
+   339                          
+   339                          .i_83
+   339  0608  210000            	ld	hl,0	;const
+   339  060b  39                	add	hl,sp
+   339  060c  e5                	push	hl
+   339  060d  215400            	ld	hl,84	;const
+   339  0610  cd0000            	call	inp_fastcall
+   339  0613  cd0000            	call	l_com
+   339  0616  d1                	pop	de
+   339  0617  7d                	ld	a,l
+   339  0618  12                	ld	(de),a
+   339  0619  e1                	pop	hl
+   339  061a  e5                	push	hl
+   339  061b  2600              	ld	h,0
+   339  061d  7d                	ld	a,l
+   339  061e  e602              	and	2
+   339  0620  ca2b06            	jp	z,i_86	;
+   339  0623  210100            	ld	hl,1	;const
+   339  0626  39                	add	hl,sp
+   339  0627  7e                	ld	a,(hl)
+   339  0628  f601              	or	1
+   339  062a  77                	ld	(hl),a
+   339                          .i_86
+   339  062b  e1                	pop	hl
+   339  062c  e5                	push	hl
+   339  062d  2600              	ld	h,0
+   339  062f  7d                	ld	a,l
+   339  0630  e601              	and	1
+   339  0632  ca3d06            	jp	z,i_87	;
+   339  0635  210100            	ld	hl,1	;const
+   339  0638  39                	add	hl,sp
+   339  0639  7e                	ld	a,(hl)
+   339  063a  f602              	or	2
+   339  063c  77                	ld	(hl),a
+   339                          .i_87
+   339  063d  e1                	pop	hl
+   339  063e  e5                	push	hl
+   339  063f  2600              	ld	h,0
+   339  0641  7d                	ld	a,l
+   339  0642  e608              	and	8
+   339  0644  ca4f06            	jp	z,i_88	;
+   339  0647  210100            	ld	hl,1	;const
+   339  064a  39                	add	hl,sp
+   339  064b  7e                	ld	a,(hl)
+   339  064c  f608              	or	8
+   339  064e  77                	ld	(hl),a
+   339                          .i_88
+   339  064f  e1                	pop	hl
+   339  0650  e5                	push	hl
+   339  0651  2600              	ld	h,0
+   339  0653  7d                	ld	a,l
+   339  0654  e604              	and	4
+   339  0656  ca6106            	jp	z,i_89	;
+   339  0659  210100            	ld	hl,1	;const
+   339  065c  39                	add	hl,sp
+   339  065d  7e                	ld	a,(hl)
+   339  065e  f604              	or	4
+   339  0660  77                	ld	(hl),a
+   339                          .i_89
+   339  0661  e1                	pop	hl
+   339  0662  e5                	push	hl
+   339  0663  2600              	ld	h,0
+   339  0665  7d                	ld	a,l
+   339  0666  e610              	and	16
+   339  0668  ca7306            	jp	z,i_90	;
+   339  066b  210100            	ld	hl,1	;const
+   339  066e  39                	add	hl,sp
+   339  066f  7e                	ld	a,(hl)
+   339  0670  f610              	or	16
+   339  0672  77                	ld	(hl),a
+   339                          .i_90
+   339  0673  e1                	pop	hl
+   339  0674  e5                	push	hl
+   339  0675  6c                	ld	l,h
+   339  0676  2600              	ld	h,0
+   339  0678  c1                	pop	bc
+   339  0679  c9                	ret
+   339                          
+   339                          
+   339                          	C_LINE	353,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_joy::0::28"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_joy::0::28:
+   353                          
+   353                          ; Function plat_frame_sync flags 0x00000200 __smallc
+   353                          ; void plat_frame_sync()
+   353                          	C_LINE	353,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_frame_sync::0::28"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_frame_sync::0::28:
+   353                          ._plat_frame_sync
+   353  067a  3a0000            	ld	a,(_net_active)
+   353  067d  a7                	and	a
+   353  067e  ca8706            	jp	z,i_91	;
+   353  0681  21160d            	ld	hl,3350	;const
+   353  0684  c38a06            	jp	i_92	;
+   353                          .i_91
+   353  0687  21ce0c            	ld	hl,3278	;const
+   353                          .i_92
+   353  068a  e5                	push	hl
+   353  068b  eb                	ex	de,hl
+   353  068c  2a0000            	ld	hl,(_frame_div)
+   353  068f  cd0000            	call	l_ne
+   353  0692  d29c06            	jp	nc,i_93	;
+   353  0695  e1                	pop	hl
+   353  0696  e5                	push	hl
+   353  0697  e5                	push	hl
+   353  0698  cd7000            	call	_frame_timer
+   353  069b  c1                	pop	bc
+   353                          .i_93
+   353  069c  cd1505            	call	_kb_age
+   353                          .i_96
+   353  069f  cdb304            	call	_kb_poll
+   353  06a2  cd2102            	call	_tone_poll
+   353                          .i_94
+   353  06a5  215300            	ld	hl,83	;const
+   353  06a8  cd0000            	call	inp_fastcall
+   353  06ab  7d                	ld	a,l
+   353  06ac  e680              	and	128
+   353  06ae  ca9f06            	jp	z,i_96	;EOS
+   353                          .i_95
+   353  06b1  215500            	ld	hl,85	;const
+   353  06b4  e5                	push	hl
+   353  06b5  2e80              	ld	l,128
+   353  06b7  e5                	push	hl
+   353  06b8  cd0000            	call	outp_callee
+   353  06bb  c1                	pop	bc
+   353  06bc  c9                	ret
+   353                          
+   353                          
+   353                          	C_LINE	364,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_frame_sync::0::30"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_frame_sync::0::30:
+   364                          
+   364                          ; Function plat_delay flags 0x00000200 __smallc
+   364                          ; void plat_delay()
+   364                          	C_LINE	364,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_delay::0::30"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_delay::0::30:
+   364                          ._plat_delay
+   364  06bd  cd6500            	call	_ctr2_read
+   364  06c0  e5                	push	hl
+   364  06c1  210000            	ld	hl,0	;const
+   364  06c4  e5                	push	hl
+   364                          .i_97
+   364  06c5  e1                	pop	hl
+   364  06c6  e5                	push	hl
+   364  06c7  11c620            	ld	de,8390
+   364  06ca  a7                	and	a
+   364  06cb  ed52              	sbc	hl,de
+   364  06cd  d2ec06            	jp	nc,i_98	;
+   364  06d0  cdb304            	call	_kb_poll
+   364  06d3  cd2102            	call	_tone_poll
+   364  06d6  210000            	ld	hl,0	;const
+   364  06d9  cd0000            	call	l_gintspsp	;
+   364  06dc  210400            	ld	hl,4	;const
+   364  06df  39                	add	hl,sp
+   364  06e0  e5                	push	hl
+   364  06e1  cdad00            	call	_ticks_since
+   364  06e4  c1                	pop	bc
+   364  06e5  d1                	pop	de
+   364  06e6  19                	add	hl,de
+   364  06e7  c1                	pop	bc
+   364  06e8  e5                	push	hl
+   364  06e9  c3c506            	jp	i_97	;EOS
+   364                          .i_98
+   364  06ec  c1                	pop	bc
+   364  06ed  c1                	pop	bc
+   364  06ee  c9                	ret
+   364                          
+   364                          
+   364                          	C_LINE	375,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_delay::0::32"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_delay::0::32:
+   375                          	C_LINE	377,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_delay::0::32"
+   377                          
+   377                          ; Function di_save flags 0x00000a00 __smallc __naked
+   377                          ; unsigned char uint8_tdi_save()
+   377                          	C_LINE	377,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::di_save::0::32"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::di_save::0::32:
+   377                          ._di_save
+   377  06ef  ed57                  ld   a,i                ; P/V = IFF2
+   377  06f1  f3                    di
+   377  06f2  210000                ld   hl,0
+   377  06f5  e0                    ret  po
+   377  06f6  2c                    inc  l
+   377  06f7  c9                    ret
+   377                          	C_LINE	388,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::di_save::0::33"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::di_save::0::33:
+   388                          
+   388                          ; Function ei_now flags 0x00000a00 __smallc __naked
+   388                          ; void ei_now()
+   388                          	C_LINE	388,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ei_now::0::33"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ei_now::0::33:
+   388                          ._ei_now
+   388  06f8  fb                    ei
+   388  06f9  c9                    ret
+   388                          	C_LINE	395,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ei_now::0::34"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::ei_now::0::34:
+   395                          
+   395                          ; Function cga_clear flags 0x00000200 __smallc
+   395                          ; void cga_clear()
+   395                          	C_LINE	395,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::cga_clear::0::34"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::cga_clear::0::34:
+   395                          ._cga_clear
+   395  06fa  2100c0            	ld	hl,49152	;const
+   395  06fd  e5                	push	hl
+   395  06fe  3600              	ld	(hl),0
+   395  0700  54                	ld	d,h
+   395  0701  5d                	ld	e,l
+   395  0702  13                	inc	de
+   395  0703  017f3e            	ld	bc,15999
+   395  0706  edb0              	ldir
+   395  0708  e1                	pop	hl
+   395  0709  c9                	ret
+   395                          
+   395                          
+   395                          	C_LINE	399,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::cga_clear::0::35"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::cga_clear::0::35:
+   399                          
+   399                          ; Function plat_init flags 0x00000200 __smallc
+   399                          ; void plat_init()
+   399                          	C_LINE	399,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_init::0::35"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_init::0::35:
+   399                          ._plat_init
+   399  070a  3b                	dec	sp
+   399  070b  cdef06            	call	_di_save
+   399  070e  7d                	ld	a,l
+   399  070f  322c00            	ld	(_saved_iff),a
+   399  0712  216300            	ld	hl,99	;const
+   399  0715  e5                	push	hl
+   399  0716  2ec0              	ld	l,192
+   399  0718  e5                	push	hl
+   399  0719  cd0000            	call	outp_callee
+   399  071c  21fbff            	ld	hl,65531	;const
+   399  071f  3602              	ld	(hl),2
+   399  0721  6e                	ld	l,(hl)
+   399  0722  2600              	ld	h,0
+   399  0724  cdfa06            	call	_cga_clear
+   399  0727  21fbff            	ld	hl,65531	;const
+   399  072a  3600              	ld	(hl),0
+   399  072c  6e                	ld	l,(hl)
+   399  072d  2600              	ld	h,0
+   399  072f  cdfa06            	call	_cga_clear
+   399  0732  21fcff            	ld	hl,65532	;const
+   399  0735  3600              	ld	(hl),0
+   399  0737  210000            	ld	hl,0	;const
+   399  073a  39                	add	hl,sp
+   399  073b  3600              	ld	(hl),0
+   399  073d  c34507            	jp	i_101	;EOS
+   399                          .i_99
+   399  0740  210000            	ld	hl,0	;const
+   399  0743  39                	add	hl,sp
+   399  0744  34                	inc	(hl)
+   399                          .i_101
+   399  0745  e1                	pop	hl
+   399  0746  e5                	push	hl
+   399  0747  2600              	ld	h,0
+   399  0749  116000            	ld	de,96
+   399  074c  a7                	and	a
+   399  074d  ed52              	sbc	hl,de
+   399  074f  d26707            	jp	nc,i_100	;
+   399  0752  21fdff            	ld	hl,65533	;const
+   399  0755  e5                	push	hl
+   399  0756  110000            	ld	de,_sapi_palette
+   399  0759  210200            	ld	hl,2	;const
+   399  075c  39                	add	hl,sp
+   399  075d  6e                	ld	l,(hl)
+   399  075e  2600              	ld	h,0
+   399  0760  19                	add	hl,de
+   399  0761  7e                	ld	a,(hl)
+   399  0762  d1                	pop	de
+   399  0763  12                	ld	(de),a
+   399  0764  c34007            	jp	i_99	;EOS
+   399                          .i_100
+   399  0767  21feff            	ld	hl,65534	;const
+   399  076a  361f              	ld	(hl),31
+   399  076c  215400            	ld	hl,84	;const
+   399  076f  e5                	push	hl
+   399  0770  2e28              	ld	l,40
+   399  0772  e5                	push	hl
+   399  0773  cd0000            	call	outp_callee
+   399  0776  215500            	ld	hl,85	;const
+   399  0779  e5                	push	hl
+   399  077a  2ec0              	ld	l,192
+   399  077c  e5                	push	hl
+   399  077d  cd0000            	call	outp_callee
+   399  0780  21ce0c            	ld	hl,3278	;const
+   399  0783  e5                	push	hl
+   399  0784  cd7000            	call	_frame_timer
+   399  0787  c1                	pop	bc
+   399  0788  210000            	ld	hl,0	;const
+   399  078b  39                	add	hl,sp
+   399  078c  3600              	ld	(hl),0
+   399  078e  c39e07            	jp	i_104	;EOS
+   399                          .i_102
+   399  0791  210000            	ld	hl,0	;const
+   399  0794  39                	add	hl,sp
+   399  0795  e5                	push	hl
+   399  0796  6e                	ld	l,(hl)
+   399  0797  2600              	ld	h,0
+   399  0799  23                	inc	hl
+   399  079a  23                	inc	hl
+   399  079b  d1                	pop	de
+   399  079c  7d                	ld	a,l
+   399  079d  12                	ld	(de),a
+   399                          .i_104
+   399  079e  e1                	pop	hl
+   399  079f  e5                	push	hl
+   399  07a0  2600              	ld	h,0
+   399  07a2  111e00            	ld	de,30
+   399  07a5  a7                	and	a
+   399  07a6  ed52              	sbc	hl,de
+   399  07a8  d2d107            	jp	nc,i_103	;
+   399  07ab  110600            	ld	de,_ym_init_tab
+   399  07ae  e1                	pop	hl
+   399  07af  e5                	push	hl
+   399  07b0  2600              	ld	h,0
+   399  07b2  19                	add	hl,de
+   399  07b3  6e                	ld	l,(hl)
+   399  07b4  2600              	ld	h,0
+   399  07b6  e5                	push	hl
+   399  07b7  210600            	ld	hl,_ym_init_tab
+   399  07ba  e5                	push	hl
+   399  07bb  210400            	ld	hl,4	;const
+   399  07be  39                	add	hl,sp
+   399  07bf  6e                	ld	l,(hl)
+   399  07c0  2600              	ld	h,0
+   399  07c2  23                	inc	hl
+   399  07c3  d1                	pop	de
+   399  07c4  19                	add	hl,de
+   399  07c5  6e                	ld	l,(hl)
+   399  07c6  2600              	ld	h,0
+   399  07c8  e5                	push	hl
+   399  07c9  cdfb00            	call	_ym
+   399  07cc  c1                	pop	bc
+   399  07cd  c1                	pop	bc
+   399  07ce  c39107            	jp	i_102	;EOS
+   399                          .i_103
+   399  07d1  210100            	ld	hl,1	;const
+   399  07d4  e5                	push	hl
+   399  07d5  2e02              	ld	l,2
+   399  07d7  e5                	push	hl
+   399  07d8  cd0000            	call	outp_callee
+   399  07db  210100            	ld	hl,1	;const
+   399  07de  7d                	ld	a,l
+   399  07df  320000            	ld	(_joy_type),a
+   399  07e2  33                	inc	sp
+   399  07e3  c9                	ret
+   399                          
+   399                          
+   399                          	C_LINE	419,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_init::0::36"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_init::0::36:
+   419                          
+   419                          ; Function plat_exit flags 0x00000200 __smallc
+   419                          ; void plat_exit()
+   419                          	C_LINE	419,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_exit::0::36"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_exit::0::36:
+   419                          ._plat_exit
+   419  07e4  2a0000            	ld	hl,(_net_device)
+   419  07e7  2600              	ld	h,0
+   419  07e9  7d                	ld	a,l
+   419  07ea  fe03              	cp	3
+   419  07ec  cc0000            	call	z,_net_leave
+   419                          .i_105
+   419  07ef  21b000            	ld	hl,176	;const
+   419  07f2  e5                	push	hl
+   419  07f3  2e00              	ld	l,0
+   419  07f5  e5                	push	hl
+   419  07f6  cdfb00            	call	_ym
+   419  07f9  c1                	pop	bc
+   419  07fa  c1                	pop	bc
+   419  07fb  216300            	ld	hl,99	;const
+   419  07fe  e5                	push	hl
+   419  07ff  2e00              	ld	l,0
+   419  0801  e5                	push	hl
+   419  0802  cd0000            	call	outp_callee
+   419  0805  2a2c00            	ld	hl,(_saved_iff)
+   419  0808  2600              	ld	h,0
+   419  080a  7c                	ld	a,h
+   419  080b  b5                	or	l
+   419  080c  c4f806            	call	nz,_ei_now
+   419                          .i_106
+   419  080f  210000            	ld	hl,0	;const
+   419  0812  cd0000            	call	exit_fastcall
+   419  0815  c9                	ret
+   419                          
+   419                          
+   419                          	C_LINE	429,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_exit::0::37"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_exit::0::37:
+   429                          	C_LINE	432,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_exit::0::37"
+   432                          
+   432                          ; Function sapi_cell flags 0x00000a00 __smallc __naked
+   432                          ; void sapi_cell()
+   432                          	C_LINE	432,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::sapi_cell::0::37"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::sapi_cell::0::37:
+   432                          ._sapi_cell
+   432  0816  3a2e00                ld   a,(_cd_y)          ; DE = C000h + 640 * y + 2 * x
+   432  0819  87                    add  a,a
+   432  081a  6f                    ld   l,a
+   432  081b  2600                  ld   h,0
+   432  081d  119f08                ld   de,sc_rowtab
+   432  0820  19                    add  hl,de
+   432  0821  5e                    ld   e,(hl)
+   432  0822  23                    inc  hl
+   432  0823  56                    ld   d,(hl)
+   432  0824  3a2d00                ld   a,(_cd_x)
+   432  0827  87                    add  a,a
+   432  0828  83                    add  a,e
+   432  0829  5f                    ld   e,a
+   432  082a  7a                    ld   a,d
+   432  082b  ce00                  adc  a,0
+   432  082d  57                    ld   d,a
+   432  082e  210000                ld   hl,_sapi_game_idx
+   432  0831  3a0000                ld   a,(_title_mode)
+   432  0834  b7                    or   a
+   432  0835  2803                  jr   z,sc_t
+   432  0837  210000                ld   hl,_sapi_title_idx
+   432                          sc_t:
+   432  083a  3a2f00                ld   a,(_cd_code)
+   432  083d  4f                    ld   c,a
+   432  083e  0600                  ld   b,0
+   432  0840  09                    add  hl,bc
+   432  0841  6e                    ld   l,(hl)             ; cell number -> 16 bytes
+   432  0842  60                    ld   h,b
+   432  0843  29                    add  hl,hl
+   432  0844  29                    add  hl,hl
+   432  0845  29                    add  hl,hl
+   432  0846  29                    add  hl,hl
+   432  0847  010000                ld   bc,_sapi_cells
+   432  084a  09                    add  hl,bc
+   432  084b  014f00                ld   bc,79
+   432                              REPT 8
+   432                              ld   a,(hl)             ; left byte (a cell starts at an even address)
+   432                              ld   (de),a
+   432                              inc  hl
+   432                              inc  e
+   432                              ld   a,(hl)             ; right byte
+   432                              ld   (de),a
+   432                              inc  hl
+   432                              ex   de,hl              ; next pixel line: +80
+   432                              add  hl,bc
+   432                              ex   de,hl
+   432  084e  7e12231c7e1223eb      ENDR
+              09eb7e12231c7e12  
+              23eb09eb7e12231c  
+              7e1223eb09eb7e12  
+              231c7e1223eb09eb  
+              7e12231c7e1223eb  
+              09eb7e12231c7e12  
+              23eb09eb7e12231c  
+              7e1223eb09eb7e12  
+              231c7e1223eb09eb  
+   432  089e  c9                    ret
+   432                          sc_rowtab:
+   432  089f  00c080c200c580c7      defw 0xc000, 0xc280, 0xc500, 0xc780, 0xca00, 0xcc80, 0xcf00, 0xd180
+              00ca80cc00cf80d1  
+   432  08af  00d480d600d980db      defw 0xd400, 0xd680, 0xd900, 0xdb80, 0xde00, 0xe080, 0xe300, 0xe580
+              00de80e000e380e5  
+   432  08bf  00e880ea00ed80ef      defw 0xe800, 0xea80, 0xed00, 0xef80, 0xf200, 0xf480, 0xf700, 0xf980
+              00f280f400f780f9  
+   432  08cf  00fc                  defw 0xfc00
+   432                          	C_LINE	492,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::sapi_cell::0::38"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::sapi_cell::0::38:
+   492                          
+   492                          ; Function plat_player_colour flags 0x00000200 __smallc
+   492                          ; void plat_player_colour(unsigned char x, unsigned char y, unsigned char player)
+   492                          ; parameter 'unsigned char player' at sp+2 size(1)
+   492                          ; parameter 'unsigned char y' at sp+4 size(1)
+   492                          ; parameter 'unsigned char x' at sp+6 size(1)
+   492                          	C_LINE	492,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_player_colour::0::38"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_player_colour::0::38:
+   492                          ._plat_player_colour
+   492  08d1  c5                	push	bc
+   492  08d2  c5                	push	bc
+   492  08d3  c5                	push	bc
+   492  08d4  210a00            	ld	hl,10	;const
+   492  08d7  39                	add	hl,sp
+   492  08d8  6e                	ld	l,(hl)
+   492  08d9  2600              	ld	h,0
+   492  08db  7d                	ld	a,l
+   492  08dc  d619              	sub	25
+   492  08de  3f                	ccf
+   492  08df  d2e608            	jp	nc,i_107	;
+   492  08e2  c1                	pop	bc
+   492  08e3  c1                	pop	bc
+   492  08e4  c1                	pop	bc
+   492  08e5  c9                	ret
+   492                          
+   492                          
+   492                          .i_107
+   492  08e6  210400            	ld	hl,4	;const
+   492  08e9  39                	add	hl,sp
+   492  08ea  e5                	push	hl
+   492  08eb  210000            	ld	hl,_sapi_glyphs
+   492  08ee  e5                	push	hl
+   492  08ef  210000            	ld	hl,_sapi_game_glyph
+   492  08f2  e5                	push	hl
+   492  08f3  210000            	ld	hl,_shadow_vram
+   492  08f6  e5                	push	hl
+   492  08f7  210000            	ld	hl,_row_off
+   492  08fa  e5                	push	hl
+   492  08fb  211400            	ld	hl,20	;const
+   492  08fe  39                	add	hl,sp
+   492  08ff  6e                	ld	l,(hl)
+   492  0900  2600              	ld	h,0
+   492  0902  29                	add	hl,hl
+   492  0903  d1                	pop	de
+   492  0904  19                	add	hl,de
+   492  0905  5e                	ld	e,(hl)
+   492  0906  23                	inc	hl
+   492  0907  56                	ld	d,(hl)
+   492  0908  211400            	ld	hl,20	;const
+   492  090b  39                	add	hl,sp
+   492  090c  6e                	ld	l,(hl)
+   492  090d  2600              	ld	h,0
+   492  090f  19                	add	hl,de
+   492  0910  d1                	pop	de
+   492  0911  19                	add	hl,de
+   492  0912  6e                	ld	l,(hl)
+   492  0913  2600              	ld	h,0
+   492  0915  d1                	pop	de
+   492  0916  19                	add	hl,de
+   492  0917  6e                	ld	l,(hl)
+   492  0918  2600              	ld	h,0
+   492  091a  29                	add	hl,hl
+   492  091b  29                	add	hl,hl
+   492  091c  29                	add	hl,hl
+   492  091d  d1                	pop	de
+   492  091e  19                	add	hl,de
+   492  091f  d1                	pop	de
+   492  0920  cd0000            	call	l_pint
+   492  0923  210100            	ld	hl,1	;const
+   492  0926  39                	add	hl,sp
+   492  0927  e5                	push	hl
+   492  0928  110000            	ld	de,_sapi_player_attr
+   492  092b  210a00            	ld	hl,10	;const
+   492  092e  39                	add	hl,sp
+   492  092f  6e                	ld	l,(hl)
+   492  0930  2600              	ld	h,0
+   492  0932  19                	add	hl,de
+   492  0933  7e                	ld	a,(hl)
+   492  0934  d1                	pop	de
+   492  0935  12                	ld	(de),a
+   492  0936  210a00            	ld	hl,10	;const
+   492  0939  39                	add	hl,sp
+   492  093a  6e                	ld	l,(hl)
+   492  093b  2600              	ld	h,0
+   492  093d  118002            	ld	de,640
+   492  0940  cd0000            	call	l_mult
+   492  0943  3ec0              	ld	a,192
+   492  0945  84                	add	h
+   492  0946  67                	ld	h,a
+   492  0947  e5                	push	hl
+   492  0948  210e00            	ld	hl,14	;const
+   492  094b  39                	add	hl,sp
+   492  094c  6e                	ld	l,(hl)
+   492  094d  2600              	ld	h,0
+   492  094f  29                	add	hl,hl
+   492  0950  d1                	pop	de
+   492  0951  19                	add	hl,de
+   492  0952  d1                	pop	de
+   492  0953  c1                	pop	bc
+   492  0954  e5                	push	hl
+   492  0955  d5                	push	de
+   492  0956  210000            	ld	hl,0	;const
+   492  0959  39                	add	hl,sp
+   492  095a  3600              	ld	(hl),0
+   492  095c  c36c09            	jp	i_110	;EOS
+   492                          .i_108
+   492  095f  210000            	ld	hl,0	;const
+   492  0962  39                	add	hl,sp
+   492  0963  34                	inc	(hl)
+   492  0964  d1                	pop	de
+   492  0965  e1                	pop	hl
+   492  0966  015000            	ld	bc,80
+   492  0969  09                	add	hl,bc
+   492  096a  e5                	push	hl
+   492  096b  d5                	push	de
+   492                          .i_110
+   492  096c  e1                	pop	hl
+   492  096d  e5                	push	hl
+   492  096e  7d                	ld	a,l
+   492  096f  d608              	sub	8
+   492  0971  d2c009            	jp	nc,i_109	;
+   492  0974  210200            	ld	hl,2	;const
+   492  0977  cd0000            	call	l_gintspsp	;
+   492  097a  210600            	ld	hl,6	;const
+   492  097d  39                	add	hl,sp
+   492  097e  5e                	ld	e,(hl)
+   492  097f  23                	inc	hl
+   492  0980  56                	ld	d,(hl)
+   492  0981  210200            	ld	hl,2	;const
+   492  0984  39                	add	hl,sp
+   492  0985  6e                	ld	l,(hl)
+   492  0986  2600              	ld	h,0
+   492  0988  19                	add	hl,de
+   492  0989  7e                	ld	a,(hl)
+   492  098a  e6f0              	and	240
+   492  098c  210300            	ld	hl,3	;const
+   492  098f  39                	add	hl,sp
+   492  0990  b6                	or	(hl)
+   492  0991  d1                	pop	de
+   492  0992  12                	ld	(de),a
+   492  0993  c1                	pop	bc
+   492  0994  e1                	pop	hl
+   492  0995  e5                	push	hl
+   492  0996  c5                	push	bc
+   492  0997  23                	inc	hl
+   492  0998  e5                	push	hl
+   492  0999  210600            	ld	hl,6	;const
+   492  099c  39                	add	hl,sp
+   492  099d  5e                	ld	e,(hl)
+   492  099e  23                	inc	hl
+   492  099f  56                	ld	d,(hl)
+   492  09a0  210200            	ld	hl,2	;const
+   492  09a3  39                	add	hl,sp
+   492  09a4  6e                	ld	l,(hl)
+   492  09a5  2600              	ld	h,0
+   492  09a7  19                	add	hl,de
+   492  09a8  6e                	ld	l,(hl)
+   492  09a9  2600              	ld	h,0
+   492  09ab  29                	add	hl,hl
+   492  09ac  29                	add	hl,hl
+   492  09ad  29                	add	hl,hl
+   492  09ae  29                	add	hl,hl
+   492  09af  eb                	ex	de,hl
+   492  09b0  210300            	ld	hl,3	;const
+   492  09b3  39                	add	hl,sp
+   492  09b4  6e                	ld	l,(hl)
+   492  09b5  2600              	ld	h,0
+   492  09b7  cd0000            	call	l_or
+   492  09ba  d1                	pop	de
+   492  09bb  7d                	ld	a,l
+   492  09bc  12                	ld	(de),a
+   492  09bd  c35f09            	jp	i_108	;EOS
+   492                          .i_109
+   492  09c0  c1                	pop	bc
+   492  09c1  c1                	pop	bc
+   492  09c2  c1                	pop	bc
+   492  09c3  c9                	ret
+   492                          
+   492                          
+   492                          	C_LINE	508,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_player_colour::0::40"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::plat_player_colour::0::40:
+   508                          
+   508                          ; Function flush_screen flags 0x00000a00 __smallc __naked
+   508                          ; void flush_screen()
+   508                          	C_LINE	508,"E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::flush_screen::0::40"
+E:\SAPI_GIT\SAPI-BomberNet\sapi\plat_sapi.c::flush_screen::0::40:
+   508                          ._flush_screen
+   508  09c4  cd2102                call _tone_poll
+   508  09c7  3a0000                ld   a,(_screen_cleared)
+   508  09ca  b7                    or   a
+   508  09cb  2843                  jr   z,fs_scan
+   508  09cd  af                    xor  a
+   508  09ce  320000                ld   (_screen_cleared),a
+   508  09d1  ed73730b              ld   (fs_sp),sp
+   508  09d5  3180fe                ld   sp,0xc000+16000    ; the CPU page, pushed from the top down
+   508  09d8  210000                ld   hl,0
+   508  09db  06fa                  ld   b,250
+   508                          fs_wipe:
+   508                              REPT 32
+   508                              push hl
+   508  09dd  e5e5e5e5e5e5e5e5      ENDR
+              e5e5e5e5e5e5e5e5  
+              e5e5e5e5e5e5e5e5  
+              e5e5e5e5e5e5e5e5  
+   508  09fd  10de                  djnz fs_wipe
+   508  09ff  ed7b730b              ld   sp,(fs_sp)
+   508  0a03  210000                ld   hl,_shadow_vram    ; the screen now shows blanks
+   508  0a06  110100                ld   de,_shadow_vram+1
+   508  0a09  01e703                ld   bc,999
+   508  0a0c  3620                  ld   (hl),0x20
+   508  0a0e  edb0                  ldir
+   508                          fs_scan:                    ; 40 compares per row, unrolled: an unchanged cell costs 36 T-states
+   508  0a10  110000                ld   de,_draw_buf
+   508  0a13  210000                ld   hl,_shadow_vram
+   508  0a16  af                    xor  a
+   508  0a17  322e00                ld   (_cd_y),a
+   508                          fs_row:
+   508  0a1a  22710b                ld   (fs_rowst),hl
+   508                              REPT 40
+   508                              ld   a,(de)
+   508                              cp   (hl)
+   508                              call nz,fs_chg
+   508                              inc  hl
+   508                              inc  de
+   508  0a1d  1abec45a0b23131a      ENDR
+              bec45a0b23131abe  
+              c45a0b23131abec4  
+              5a0b23131abec45a  
+              0b23131abec45a0b  
+              23131abec45a0b23  
+              131abec45a0b2313  
+              1abec45a0b23131a  
+              bec45a0b23131abe  
+              c45a0b23131abec4  
+              5a0b23131abec45a  
+              0b23131abec45a0b  
+              23131abec45a0b23  
+              131abec45a0b2313  
+              1abec45a0b23131a  
+              bec45a0b23131abe  
+              c45a0b23131abec4  
+              5a0b23131abec45a  
+              0b23131abec45a0b  
+              23131abec45a0b23  
+              131abec45a0b2313  
+              1abec45a0b23131a  
+              bec45a0b23131abe  
+              c45a0b23131abec4  
+              5a0b23131abec45a  
+              0b23131abec45a0b  
+              23131abec45a0b23  
+              131abec45a0b2313  
+              1abec45a0b23131a  
+              bec45a0b23131abe  
+              c45a0b23131abec4  
+              5a0b23131abec45a  
+              0b23131abec45a0b  
+              23131abec45a0b23  
+              131abec45a0b2313  
+   508  0b35  3a2e00                ld   a,(_cd_y)
+   508  0b38  3c                    inc  a
+   508  0b39  322e00                ld   (_cd_y),a
+   508  0b3c  fe19                  cp   25
+   508  0b3e  c21a0a                jp   nz,fs_row
+   508  0b41  ed73730b              ld   (fs_sp),sp         ; the draw buffer starts every frame empty
+   508  0b45  31e803                ld   sp,_draw_buf+1000
+   508  0b48  212020                ld   hl,0x2020
+   508  0b4b  067d                  ld   b,125
+   508                          fs_clr:
+   508  0b4d  e5                    push hl
+   508  0b4e  e5                    push hl
+   508  0b4f  e5                    push hl
+   508  0b50  e5                    push hl
+   508  0b51  10fa                  djnz fs_clr
+   508  0b53  ed7b730b              ld   sp,(fs_sp)
+   508  0b57  c32102                jp   _tone_poll
+   508                          fs_chg:                     ; A = new code, HL = shadow, DE = draw buffer
+   508  0b5a  77                    ld   (hl),a             ; shadow = new code
+   508  0b5b  322f00                ld   (_cd_code),a
+   508  0b5e  e5                    push hl
+   508  0b5f  d5                    push de
+   508  0b60  ed5b710b              ld   de,(fs_rowst)
+   508  0b64  b7                    or   a
+   508  0b65  ed52                  sbc  hl,de
+   508  0b67  7d                    ld   a,l
+   508  0b68  322d00                ld   (_cd_x),a          ; column = offset in the row
+   508  0b6b  cd1608                call _sapi_cell
+   508  0b6e  d1                    pop  de
+   508  0b6f  e1                    pop  hl
+   508  0b70  c9                    ret
+   508  0b71  0000              fs_rowst: defw 0
+   508  0b73  0000              fs_sp: defw 0
+   508                          	SECTION	bss_compiler
+   508                          	SECTION	code_compiler
+   508                          ; --- Start of Optimiser additions ---
+   508                          	defc	i_18 = i_17
+   508                          	defc	i_35 = i_36
+   508                          	defc	i_37 = i_38
+   508                          	defc	i_39 = i_40
+   508                          	defc	i_41 = i_42
+   508                          	defc	i_46 = i_47
+   508                          	defc	i_47 = i_48
+   508                          	defc	i_49 = i_50
+   508                          	defc	i_24 = i_23
+   508                          	defc	i_26 = i_27
+   508                          	defc	i_65 = i_64
+   508                          	defc	i_66_i_65 = i_63
+   508                          	defc	i_73 = i_72
+   508                          
+   508                          	SECTION	rodata_compiler
+   508                          .i_1
+   508  0024  4e4f4e4520202020  	defm	"NONE    "
+   508  002c  00                	defb	0
+   508                          
+   508  002d  4d50482d31562020  	defm	"MPH-1V  "
+   508  0035  00                	defb	0
+   508                          
+   508  0036  435552534f522041  	defm	"CURSOR AND CR   "
+              4e44204352202020  
+   508  0046  00                	defb	0
+   508                          
+   508  0047  435552534f522041  	defm	"CURSOR AND SPACE"
+              4e44205350414345  
+   508  0057  00                	defb	0
+   508                          
+   508  0058  5741534420414e44  	defm	"WASD AND E      "
+              2045202020202020  
+   508  0068  00                	defb	0
+   508                          
+   508  0069  4a4f59535449434b  	defm	"JOYSTICK MPH-1V "
+              204d50482d315620  
+   508  0079  00                	defb	0
+   508                          
+   508  007a  4a4f59535449434b  	defm	"JOYSTICK 2      "
+              2032202020202020  
+   508  008a  00                	defb	0
+   508                          
+   508                          
+   508                          ; --- Start of Static Variables ---
+   508                          
+   508                          	SECTION	bss_compiler
+   508  0000  0000              ._frame_div	defs	2
+   508  0002  00                ._ym_r	defs	1
+   508  0003  00                ._ym_v	defs	1
+   508  0004  00                ._tone_on	defs	1
+   508  0005  00                ._tq_n	defs	1
+   508  0006  00                ._tq_head	defs	1
+   508  0007  0000              ._tone_left	defs	2
+   508  0009  0000              ._tone_last	defs	2
+   508  000b  0000000000000000  ._tq	defs	24
+              0000000000000000  
+              0000000000000000  
+   508  0023  00                ._kd_a	defs	1
+   508  0024  00                ._kf_a	defs	1
+   508  0025  00                ._kd_b	defs	1
+   508  0026  00                ._kf_b	defs	1
+   508  0027  00                ._k_space	defs	1
+   508  0028  00                ._k_cr	defs	1
+   508  0029  00                ._k_fire_b	defs	1
+   508  002a  00                ._k_char	defs	1
+   508  002b  00                ._k_char_f	defs	1
+   508  002c  00                ._saved_iff	defs	1
+   508  002d  00                ._cd_x	defs	1
+   508  002e  00                ._cd_y	defs	1
+   508  002f  00                ._cd_code	defs	1
+   508                          	SECTION	code_compiler
+   508                          
+   508                          
+   508                          ; --- Start of Scope Defns ---
+   508                          
+   508                          	GLOBAL	atoi
+   508                          	GLOBAL	atoi_fastcall
+   508                          	GLOBAL	atol
+   508                          	GLOBAL	atol_fastcall
+   508                          	GLOBAL	itoa
+   508                          	GLOBAL	itoa_callee
+   508                          	GLOBAL	ltoa
+   508                          	GLOBAL	ltoa_callee
+   508                          	GLOBAL	strtol
+   508                          	GLOBAL	strtol_callee
+   508                          	GLOBAL	strtoul
+   508                          	GLOBAL	strtoul_callee
+   508                          	GLOBAL	ultoa
+   508                          	GLOBAL	ultoa_callee
+   508                          	GLOBAL	utoa
+   508                          	GLOBAL	utoa_callee
+   508                          	GLOBAL	_atoll
+   508                          	GLOBAL	_atoll_callee
+   508                          	GLOBAL	_lltoa
+   508                          	GLOBAL	_lltoa_callee
+   508                          	GLOBAL	_strtoll
+   508                          	GLOBAL	_strtoll_callee
+   508                          	GLOBAL	_strtoull
+   508                          	GLOBAL	_strtoull_callee
+   508                          	GLOBAL	_ulltoa
+   508                          	GLOBAL	_ulltoa_callee
+   508                          	GLOBAL	rand
+   508                          	GLOBAL	srand
+   508                          	GLOBAL	srand_fastcall
+   508                          	GLOBAL	mallinit
+   508                          	GLOBAL	sbrk
+   508                          	GLOBAL	calloc
+   508                          	GLOBAL	free
+   508                          	GLOBAL	malloc
+   508                          	GLOBAL	realloc
+   508                          	GLOBAL	mallinfo
+   508                          	GLOBAL	malloc_fastcall
+   508                          	GLOBAL	free_fastcall
+   508                          	GLOBAL	sbrk_callee
+   508                          	GLOBAL	calloc_callee
+   508                          	GLOBAL	realloc_callee
+   508                          	GLOBAL	mallinfo_callee
+   508                          	GLOBAL	HeapCreate
+   508                          	GLOBAL	HeapSbrk
+   508                          	GLOBAL	HeapSbrk_callee
+   508                          	GLOBAL	HeapCalloc
+   508                          	GLOBAL	HeapCalloc_callee
+   508                          	GLOBAL	HeapFree
+   508                          	GLOBAL	HeapFree_callee
+   508                          	GLOBAL	HeapAlloc
+   508                          	GLOBAL	HeapAlloc_callee
+   508                          	GLOBAL	HeapRealloc
+   508                          	GLOBAL	HeapRealloc_callee
+   508                          	GLOBAL	HeapInfo
+   508                          	GLOBAL	HeapInfo_callee
+   508                          	GLOBAL	malloc_far
+   508                          	GLOBAL	free_far
+   508                          	GLOBAL	sbrk_far
+   508                          	GLOBAL	calloc_far
+   508                          	GLOBAL	realloc_far
+   508                          	GLOBAL	mallinfo_far
+   508                          	GLOBAL	freeall_far
+   508                          	GLOBAL	exit
+   508                          	GLOBAL	atexit
+   508                          	GLOBAL	exit_fastcall
+   508                          	GLOBAL	atexit_fastcall
+   508                          	GLOBAL	getenv
+   508                          	GLOBAL	getenv_r
+   508                          	GLOBAL	setenv
+   508                          	GLOBAL	unsetenv
+   508                          	GLOBAL	getopt
+   508                          	GLOBAL	_optarg
+   508                          	GLOBAL	_opterr
+   508                          	GLOBAL	_optind
+   508                          	GLOBAL	_optopt
+   508                          	GLOBAL	_optreset
+   508                          	GLOBAL	l_bsearch
+   508                          	GLOBAL	l_bsearch_callee
+   508                          	GLOBAL	l_qsort
+   508                          	GLOBAL	l_qsort_callee
+   508                          	GLOBAL	qsort_sccz80
+   508                          	GLOBAL	qsort_sccz80_callee
+   508                          	GLOBAL	qsort_sdcc
+   508                          	GLOBAL	qsort_sdcc_callee
+   508                          	GLOBAL	_div_
+   508                          	GLOBAL	_div__callee
+   508                          	GLOBAL	_divu_
+   508                          	GLOBAL	_divu__callee
+   508                          	GLOBAL	_ldiv_
+   508                          	GLOBAL	_ldiv__callee
+   508                          	GLOBAL	_ldivu_
+   508                          	GLOBAL	_ldivu__callee
+   508                          	GLOBAL	abs
+   508                          	GLOBAL	abs_fastcall
+   508                          	GLOBAL	labs
+   508                          	GLOBAL	labs_fastcall
+   508                          	GLOBAL	isqrt
+   508                          	GLOBAL	isqrt_fastcall
+   508                          	GLOBAL	inp
+   508                          	GLOBAL	inp_fastcall
+   508                          	GLOBAL	outp
+   508                          	GLOBAL	outp_callee
+   508                          	GLOBAL	swapendian
+   508                          	GLOBAL	t_delay
+   508                          	GLOBAL	sleep
+   508                          	GLOBAL	sleep_fastcall
+   508                          	GLOBAL	msleep
+   508                          	GLOBAL	msleep_fastcall
+   508                          	GLOBAL	extract_bits
+   508                          	GLOBAL	extract_bits_callee
+   508                          	GLOBAL	wcmatch
+   508                          	GLOBAL	unbcd
+   508                          	GLOBAL	bcmp
+   508                          	GLOBAL	bcmp_callee
+   508                          	GLOBAL	bcopy
+   508                          	GLOBAL	bcopy_callee
+   508                          	GLOBAL	bzero
+   508                          	GLOBAL	bzero_callee
+   508                          	GLOBAL	index
+   508                          	GLOBAL	index_callee
+   508                          	GLOBAL	rindex
+   508                          	GLOBAL	rindex_callee
+   508                          	GLOBAL	strset
+   508                          	GLOBAL	strset_callee
+   508                          	GLOBAL	strnset
+   508                          	GLOBAL	strnset_callee
+   508                          	GLOBAL	rawmemchr
+   508                          	GLOBAL	rawmemchr_callee
+   508                          	GLOBAL	_memlwr_
+   508                          	GLOBAL	_memlwr__callee
+   508                          	GLOBAL	_memstrcpy_
+   508                          	GLOBAL	_memstrcpy__callee
+   508                          	GLOBAL	_memupr_
+   508                          	GLOBAL	_memupr__callee
+   508                          	GLOBAL	_strrstrip_
+   508                          	GLOBAL	ffs
+   508                          	GLOBAL	ffsl
+   508                          	GLOBAL	memccpy
+   508                          	GLOBAL	memccpy_callee
+   508                          	GLOBAL	memchr
+   508                          	GLOBAL	memchr_callee
+   508                          	GLOBAL	memcmp
+   508                          	GLOBAL	memcmp_callee
+   508                          	GLOBAL	memcpy
+   508                          	GLOBAL	memcpy_callee
+   508                          	GLOBAL	memmem
+   508                          	GLOBAL	memmem_callee
+   508                          	GLOBAL	memmove
+   508                          	GLOBAL	memmove_callee
+   508                          	GLOBAL	memrchr
+   508                          	GLOBAL	memrchr_callee
+   508                          	GLOBAL	memset
+   508                          	GLOBAL	memset_callee
+   508                          	GLOBAL	memset_wr
+   508                          	GLOBAL	memset_wr_callee
+   508                          	GLOBAL	memswap
+   508                          	GLOBAL	memswap_callee
+   508                          	GLOBAL	stpcpy
+   508                          	GLOBAL	stpcpy_callee
+   508                          	GLOBAL	stpncpy
+   508                          	GLOBAL	stpncpy_callee
+   508                          	GLOBAL	strcasecmp
+   508                          	GLOBAL	strcasecmp_callee
+   508                          	GLOBAL	strcat
+   508                          	GLOBAL	strcat_callee
+   508                          	GLOBAL	strchr
+   508                          	GLOBAL	strchr_callee
+   508                          	GLOBAL	strchrnul
+   508                          	GLOBAL	strchrnul_callee
+   508                          	GLOBAL	strcmp
+   508                          	GLOBAL	strcmp_callee
+   508                          	GLOBAL	strcoll
+   508                          	GLOBAL	strcoll_callee
+   508                          	GLOBAL	strcpy
+   508                          	GLOBAL	strcpy_callee
+   508                          	GLOBAL	strcspn
+   508                          	GLOBAL	strcspn_callee
+   508                          	GLOBAL	strdup
+   508                          	GLOBAL	strdup_fastcall
+   508                          	GLOBAL	strerror
+   508                          	GLOBAL	strerror_fastcall
+   508                          	GLOBAL	stricmp
+   508                          	GLOBAL	stricmp_callee
+   508                          	GLOBAL	strlcat
+   508                          	GLOBAL	strlcat_callee
+   508                          	GLOBAL	strlcpy
+   508                          	GLOBAL	strlcpy_callee
+   508                          	GLOBAL	strlen
+   508                          	GLOBAL	strlen_fastcall
+   508                          	GLOBAL	strlwr
+   508                          	GLOBAL	strlwr_fastcall
+   508                          	GLOBAL	strncasecmp
+   508                          	GLOBAL	strncasecmp_callee
+   508                          	GLOBAL	strncat
+   508                          	GLOBAL	strncat_callee
+   508                          	GLOBAL	strnchar
+   508                          	GLOBAL	strnchr_callee
+   508                          	GLOBAL	strncmp
+   508                          	GLOBAL	strncmp_callee
+   508                          	GLOBAL	strncpy
+   508                          	GLOBAL	strncpy_callee
+   508                          	GLOBAL	strndup
+   508                          	GLOBAL	strndup_callee
+   508                          	GLOBAL	strnicmp
+   508                          	GLOBAL	strnicmp_callee
+   508                          	GLOBAL	strnlen
+   508                          	GLOBAL	strnlen_callee
+   508                          	GLOBAL	strpkbrk
+   508                          	GLOBAL	strpbrk_callee
+   508                          	GLOBAL	strrchr
+   508                          	GLOBAL	strrchr_callee
+   508                          	GLOBAL	strrcspn
+   508                          	GLOBAL	strrcspn_callee
+   508                          	GLOBAL	strrev
+   508                          	GLOBAL	strrev_fastcall
+   508                          	GLOBAL	strrspn
+   508                          	GLOBAL	strrspn_callee
+   508                          	GLOBAL	strrstrip
+   508                          	GLOBAL	strrstrip_fastcall
+   508                          	GLOBAL	strsep
+   508                          	GLOBAL	strsep_callee
+   508                          	GLOBAL	strspn
+   508                          	GLOBAL	strspn_callee
+   508                          	GLOBAL	strstr
+   508                          	GLOBAL	strstr_callee
+   508                          	GLOBAL	strstrip
+   508                          	GLOBAL	strstrip_fastcall
+   508                          	GLOBAL	strtok
+   508                          	GLOBAL	strtok_callee
+   508                          	GLOBAL	strtok_r
+   508                          	GLOBAL	strtok_r_callee
+   508                          	GLOBAL	strupr
+   508                          	GLOBAL	strupr_fastcall
+   508                          	GLOBAL	strxfrm
+   508                          	GLOBAL	strxfrm_callee
+   508                          	GLOBAL	strrstr
+   508                          	GLOBAL	strrstr_callee
+   508                          	GLOBAL	memopi
+   508                          	GLOBAL	memopi_callee
+   508                          	GLOBAL	memopd
+   508                          	GLOBAL	memopd_callee
+   508                          	GLOBAL	strdupf
+   508                          	GLOBAL	strlenf
+   508                          	GLOBAL	strcasecmpf
+   508                          	GLOBAL	strcmpf
+   508                          	GLOBAL	strncmpf
+   508                          	GLOBAL	strcpyf
+   508                          	GLOBAL	strncpyf
+   508                          	GLOBAL	strcatf
+   508                          	GLOBAL	strncatf
+   508                          	GLOBAL	strlwrf
+   508                          	GLOBAL	struprf
+   508                          	GLOBAL	strchrf
+   508                          	GLOBAL	strnchrf
+   508                          	GLOBAL	strrchrf
+   508                          	GLOBAL	memcpyf
+   508                          	GLOBAL	memsetf
+   508                          	GLOBAL	memchrf
+   508                          	GLOBAL	memcmpf
+   508                          	GLOBAL	__builtin_memset
+   508                          	GLOBAL	__builtin_memcpy
+   508                          	GLOBAL	__builtin_strcpy
+   508                          	GLOBAL	__builtin_strchr
+   508                          	GLOBAL	_kbd_alt_fire
+   508                          	GLOBAL	_plat_keys_a
+   508                          	GLOBAL	_plat_keys_b
+   508                          	GLOBAL	_plat_key_char
+   508                          	GLOBAL	_plat_joy
+   508                          	GLOBAL	_joy_type
+   508                          	GLOBAL	_plat_joy_names
+   508                          	GLOBAL	_plat_input_allowed
+   508                          	GLOBAL	_plat_input_name
+   508                          	GLOBAL	_plat_kbd_a_alt_name
+   508                          	GLOBAL	_plat_init
+   508                          	GLOBAL	_plat_frame_sync
+   508                          	GLOBAL	_plat_tone
+   508                          	GLOBAL	_plat_delay
+   508                          	GLOBAL	_flush_screen
+   508                          	GLOBAL	_plat_player_colour
+   508                          	GLOBAL	_composite_map
+   508                          	GLOBAL	_hash_run
+   508                          	GLOBAL	_net_device
+   508                          	GLOBAL	_net_detect
+   508                          	GLOBAL	_net_status
+   508                          	GLOBAL	_net_create
+   508                          	GLOBAL	_net_join
+   508                          	GLOBAL	_net_leave
+   508                          	GLOBAL	_net_ready
+   508                          	GLOBAL	_net_send
+   508                          	GLOBAL	_net_poll
+   508                          	GLOBAL	_net_hash
+   508                          	GLOBAL	_net_msg_send
+   508                          	GLOBAL	_net_msg_recv
+   508                          	GLOBAL	_player_digit_codes
+   508                          	GLOBAL	_players
+   508                          	GLOBAL	_player_count
+   508                          	GLOBAL	_menu_players
+   508                          	GLOBAL	_menu_inputs
+   508                          	GLOBAL	_menu_mode
+   508                          	GLOBAL	_game_mode
+   508                          	GLOBAL	_hi_score
+   508                          	GLOBAL	_time_left
+   508                          	GLOBAL	_stage
+   508                          	GLOBAL	_enemies_left
+   508                          	GLOBAL	_enemy_period
+   508                          	GLOBAL	_stage_cleared
+   508                          	GLOBAL	_exit_touched
+   508                          	GLOBAL	_timeout_flag
+   508                          	GLOBAL	_hit_pending
+   508                          	GLOBAL	_hit_spawned
+   508                          	GLOBAL	_hit_x
+   508                          	GLOBAL	_hit_y
+   508                          	GLOBAL	_bonus_x
+   508                          	GLOBAL	_bonus_y
+   508                          	GLOBAL	_bonus_present
+   508                          	GLOBAL	_bonus_revealed
+   508                          	GLOBAL	_exit_x
+   508                          	GLOBAL	_exit_y
+   508                          	GLOBAL	_exit_present
+   508                          	GLOBAL	_exit_revealed
+   508                          	GLOBAL	_enemy_anim
+   508                          	GLOBAL	_bomb_anim
+   508                          	GLOBAL	_enemies
+   508                          	GLOBAL	_bombs
+   508                          	GLOBAL	_tmr_player_anim
+   508                          	GLOBAL	_tmr_enemy_die
+   508                          	GLOBAL	_tmr_enemy_move
+   508                          	GLOBAL	_tmr_time
+   508                          	GLOBAL	_draw_buf
+   508                          	GLOBAL	_map_layer
+   508                          	GLOBAL	_shadow_vram
+   508                          	GLOBAL	_title_mode
+   508                          	GLOBAL	_row_off
+   508                          	GLOBAL	_put_tile
+   508                          	GLOBAL	_fill_2x2
+   508                          	GLOBAL	_is_2x2_clear
+   508                          	GLOBAL	_print_string
+   508                          	GLOBAL	_print_num2
+   508                          	GLOBAL	_print_num5
+   508                          	GLOBAL	_print_num4
+   508                          	GLOBAL	_hud_text
+   508                          	GLOBAL	_title_text
+   508                          	GLOBAL	_title_text_hl
+   508                          	GLOBAL	_title_text_dim
+   508                          	GLOBAL	_clear_map
+   508                          	GLOBAL	_clear_buffers
+   508                          	GLOBAL	_screen_cleared
+   508                          	GLOBAL	_input_poll
+   508                          	GLOBAL	_players_alive
+   508                          	GLOBAL	_players_finished
+   508                          	GLOBAL	_match_seed
+   508                          	GLOBAL	_frame_no
+   508                          	GLOBAL	_state_hash
+   508                          	GLOBAL	_hash_period
+   508                          	GLOBAL	_replay_active
+   508                          	GLOBAL	_replay_keys
+   508                          	GLOBAL	_rng_seed
+   508                          	GLOBAL	_compute_state_hash
+   508                          	GLOBAL	_hash_frame_step
+   508                          	GLOBAL	_hh
+   508                          	GLOBAL	_hash_ptr
+   508                          	GLOBAL	_hash_n
+   508                          	GLOBAL	_net_delay
+   508                          	GLOBAL	_menu_net
+   508                          	GLOBAL	_net_active
+   508                          	GLOBAL	_net_slot
+   508                          	GLOBAL	_net_slots
+   508                          	GLOBAL	_net_waiting
+   508                          	GLOBAL	_net_abort
+   508                          	GLOBAL	_net_code
+   508                          	GLOBAL	_input_read
+   508                          	GLOBAL	_net_match_start
+   508                          	GLOBAL	_net_table
+   508                          	GLOBAL	_net_total
+   508                          	GLOBAL	_menu_local
+   508                          	GLOBAL	_net_lockstep_poll
+   508                          	GLOBAL	_net_match_end
+   508                          	GLOBAL	_rnd
+   508                          	GLOBAL	_tick_timer
+   508                          	GLOBAL	_tick_timers
+   508                          	GLOBAL	_map_walls
+   508                          	GLOBAL	_generate_map
+   508                          	GLOBAL	_cell_to_screen
+   508                          	GLOBAL	_clear_enemies
+   508                          	GLOBAL	_spawn_enemies
+   508                          	GLOBAL	_enemy_ai
+   508                          	GLOBAL	_draw_enemies
+   508                          	GLOBAL	_spawn_from_hit
+   508                          	GLOBAL	_clear_bombs
+   508                          	GLOBAL	_place_bombs
+   508                          	GLOBAL	_bomb_owner_near
+   508                          	GLOBAL	_update_bombs
+   508                          	GLOBAL	_draw_bombs
+   508                          	GLOBAL	_players_setup
+   508                          	GLOBAL	_players_stage_reset
+   508                          	GLOBAL	_player_killed
+   508                          	GLOBAL	_players_death_colour
+   508                          	GLOBAL	_draw_players
+   508                          	GLOBAL	_players_anim_step
+   508                          	GLOBAL	_check_pickups
+   508                          	GLOBAL	_nearest_player
+   508                          	GLOBAL	_reveal_bonus
+   508                          	GLOBAL	_reveal_exit
+   508                          	GLOBAL	_draw_bonus
+   508                          	GLOBAL	_draw_exit
+   508                          	GLOBAL	_sapi_cells
+   508                          	GLOBAL	_sapi_game_idx
+   508                          	GLOBAL	_sapi_title_idx
+   508                          	GLOBAL	_sapi_glyphs
+   508                          	GLOBAL	_sapi_game_glyph
+   508                          	GLOBAL	_sapi_player_attr
+   508                          	GLOBAL	_sapi_palette
+   508                          	GLOBAL	_plat_exit
+   508                          	GLOBAL	_cd_x
+   508                          	GLOBAL	_cd_y
+   508                          	GLOBAL	_cd_code
+   508                          
+   508                          
+   508                          ; --- End of Scope Defns ---
+   508                          
+   508                          
+   508                          ; --- End of Compilation ---
+   508                          

@@ -1,0 +1,3 @@
+[submodule "BomberNet"]
+	path = BomberNet
+	url = https://github.com/MZPico/BomberNet.git
