@@ -2,3 +2,4 @@ build/
 __pycache__/
 # MZ-700 character ROM (Sharp), not distributed: tools/make_tables.py reads it from outside the repo
 cgrom.bin
+*.lis

@@ -18,7 +18,7 @@ cd /d "%ROOT%build"
 
 rem Link order is memory order (as BomberNet c/CMakeLists.txt). The stack is below the CGA-1V (C000h), the
 rem program never prints through the C library.
-zcc +cpm %ZOPT% -m --list -I"%BN%\core" -I"%BN%\common" -I"%ROOT%sapi" ^
+zcc +cpm %ZOPT% -m -I"%BN%\core" -I"%BN%\common" -I"%ROOT%sapi" ^
   -pragma-define:REGISTER_SP=0xC000 -pragma-define:CRT_ENABLE_STDIO=0 -pragma-define:CLIB_OPEN_MAX=0 ^
   -o bombnet.com ^
   "%BN%\core\bomber.c" "%BN%\core\netplay.c" "%BN%\core\data.c" "%BN%\core\map.c" "%BN%\core\game.c" ^
