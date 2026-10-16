@@ -59,6 +59,12 @@ Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
   v tom snímku nepřečetla (zachycený uprostřed snímku nebo při čekání lockstepu na síť), a vydržel jen 3 čtení.
   Teď stárne jen přečtený stisk (`seen`), klávesnice se čte před vyhodnocením, nečtené stisky zmizí po 20 snímcích
   bez klávesy. `tools/emu/taps.py`: 40 ťuknutí v náhodném okamžiku snímku, 0 půlkroků.
+- **Mezipolohy podruhé** (Martin, snímek s hráčem v půlce políčka): jiný směr během kroku přepsal rozdělané
+  políčko a strop podržení (8 snímků) uřízl část přidaného políčka. Teď další směr počká na dokončení políčka a
+  další políčko se přidá jen celé. `taps.py --fast` (120 ťuknutí 0–300 ms po sobě): předchozí verze 21 mezipoloh,
+  nová 0.
+- **Joystick i v menu** (Martin: „bez klávesnice to v menu nejde“): páka a palba platí i jako klávesy sady A
+  (menu, lobby, kód místnosti, hlášky), kromě zápasu, kde má jeden místní hráč klávesnici a druhý joystick.
 - **Desync jednou** (SAPI host po předchozím zápase, GUI SAPIemu čerstvě JOIN, mapy se lišily od začátku).
   Nezopakoval se: v emulátorech v obou pořadích (čerstvý × použitý) bez desyncu, Martin pak 5 zápasů po sobě SAPI
   × GUI bez restartu bez desyncu (`tools/emu/watch.py`). Příčina neznámá, při dalším výskytu porovnat záznam

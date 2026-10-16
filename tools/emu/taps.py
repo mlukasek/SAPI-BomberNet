@@ -11,6 +11,7 @@ import sapimcp as mcp
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--taps', type=int, default=40)
+ap.add_argument('--fast', action='store_true', help='taps 0-300 ms apart (the cell is checked after a pause)')
 a = ap.parse_args()
 g = emu.Game()
 g.start()
@@ -28,7 +29,10 @@ for t in range(a.taps):
     mcp.call('run_for', ms=random.uniform(0, 60))            # anywhere in the frame
     d = random.choice(['left', 'right', 'up', 'down'])
     mcp.call('press_key', key=d)
-    mcp.call('run_for', ms=700)
+    if a.fast and random.random() < 0.7:
+        mcp.call('run_for', ms=random.uniform(0, 300))  # the next tap soon, maybe in the middle of a cell
+        continue
+    mcp.call('run_for', ms=900)
     p = emu.read(P, 6)
     x, y, state = p[3], p[4], p[5]
     if state >= 6:

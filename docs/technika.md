@@ -78,7 +78,11 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
   - sada B: **W A S D**;
   - písmena pro kód místnosti, BS nebo DEL = mazání, ESC nebo BREAK (84h/85h) = zrušit (BREAK v BomberNetu);
   - **Ctrl+C** = konec do CP/M.
-- Stisky se stárnou na začátku čekání na snímek. Stisk zachycený během čekání tak platí od následujícího snímku.
+- Stisk stárne jen ve snímku, ve kterém ho hra přečetla (zachycený uprostřed snímku tak nepřijde o snímek). Jiný
+  směr počká na dokončení rozdělaného políčka, další stisk téže šipky přidá jen celé políčko. Nečtené stisky zmizí
+  po 20 snímcích bez klávesy.
+- **Joystick platí i jako sada A** (menu, lobby, kód místnosti, hlášky), kromě zápasu, kde má jeden místní hráč
+  klávesnici a druhý joystick.
 
 ## Síť
 

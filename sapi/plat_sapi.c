@@ -255,8 +255,8 @@ static void tone_poll(void) {
  * A press is caught by polling: STROBE (P0-IN0 = 0), the code (P1, inverted), ACK until STROBE goes away (at
  * most 256 reads), ACK off, as MikroMon. Consul 262.3 gives STROBE only as a 1 ms pulse, so the keyboard is polled
  * wherever the program waits. */
-static uint8_t kd_a, kf_a;                       /* key set A: direction mask, frames left */
-static uint8_t kd_b, kf_b;                       /* key set B (W A S D) */
+static uint8_t kd_a, kf_a, kp_a;                 /* key set A: direction mask, frames left, the next direction */
+static uint8_t kd_b, kf_b, kp_b;                 /* key set B (W A S D) */
 static uint8_t k_space, k_cr, k_fire_b;          /* frames left */
 static uint8_t k_char, k_char_f;
 /* A hold ages only in a frame in which the game read it: a press caught in the middle of a frame (while reading the
@@ -273,13 +273,26 @@ static uint8_t seen, kb_idle;
 
 void plat_exit(void);
 
-static void hold_dir(uint8_t *dir, uint8_t *frames, uint8_t mask) {
-  if (*dir == mask && *frames) {                 /* the same key again while moving: one cell more */
-    *frames += HOLD_MOVE;
-    if (*frames > HOLD_MOVE_MAX) *frames = HOLD_MOVE_MAX;
-  } else {
+/* A cursor key walks whole cells: a hold is HOLD_MOVE frames per cell, so it must neither be cut short nor replaced
+ * half way. The same key again adds a whole cell (or nothing when the limit is reached); another direction waits
+ * until the cell being walked is done. */
+static void hold_dir(uint8_t *dir, uint8_t *frames, uint8_t *next, uint8_t mask) {
+  if (!*frames) {
     *dir = mask;
     *frames = HOLD_MOVE;
+    *next = 0;
+  } else if (*dir == mask) {
+    if (*frames + HOLD_MOVE <= HOLD_MOVE_MAX) *frames += HOLD_MOVE;
+  } else {
+    *next = mask;
+  }
+}
+
+static void hold_next(uint8_t *dir, uint8_t *frames, uint8_t *next) {
+  if (!*frames && *next) {
+    *dir = *next;
+    *frames = HOLD_MOVE;
+    *next = 0;
   }
 }
 
@@ -287,10 +300,10 @@ static void kb_key(uint8_t c) {
   uint8_t u = (c >= 'a' && c <= 'z') ? (uint8_t)(c - 32) : c;
   kb_idle = 0;
   switch (c) {
-  case 0xc1: case 0x05: hold_dir(&kd_a, &kf_a, KEY_UP); return;        /* Consul C1-C4, EKL-1 WordStar */
-  case 0xc2: case 0x18: hold_dir(&kd_a, &kf_a, KEY_DOWN); return;
-  case 0xc3: case 0x04: hold_dir(&kd_a, &kf_a, KEY_RIGHT); return;
-  case 0xc4: case 0x13: hold_dir(&kd_a, &kf_a, KEY_LEFT); return;
+  case 0xc1: case 0x05: hold_dir(&kd_a, &kf_a, &kp_a, KEY_UP); return;        /* Consul C1-C4, EKL-1 WordStar */
+  case 0xc2: case 0x18: hold_dir(&kd_a, &kf_a, &kp_a, KEY_DOWN); return;
+  case 0xc3: case 0x04: hold_dir(&kd_a, &kf_a, &kp_a, KEY_RIGHT); return;
+  case 0xc4: case 0x13: hold_dir(&kd_a, &kf_a, &kp_a, KEY_LEFT); return;
   case ' ': k_space = HOLD_FIRE; return;
   case 0x0d: k_cr = HOLD_FIRE; return;
   case 0x03: plat_exit(); return;                                       /* Ctrl+C: back to CP/M */
@@ -301,10 +314,10 @@ static void kb_key(uint8_t c) {
   k_char = u;
   k_char_f = HOLD_CHAR;
   switch (u) {
-  case 'W': hold_dir(&kd_b, &kf_b, KEY_UP); break;
-  case 'S': hold_dir(&kd_b, &kf_b, KEY_DOWN); break;
-  case 'D': hold_dir(&kd_b, &kf_b, KEY_RIGHT); break;
-  case 'A': hold_dir(&kd_b, &kf_b, KEY_LEFT); break;
+  case 'W': hold_dir(&kd_b, &kf_b, &kp_b, KEY_UP); break;
+  case 'S': hold_dir(&kd_b, &kf_b, &kp_b, KEY_DOWN); break;
+  case 'D': hold_dir(&kd_b, &kf_b, &kp_b, KEY_RIGHT); break;
+  case 'A': hold_dir(&kd_b, &kf_b, &kp_b, KEY_LEFT); break;
   case 'E': k_fire_b = HOLD_FIRE; break;
   }
 }
@@ -322,10 +335,12 @@ static void kb_poll(void) {
 static void kb_age(void) {                      /* once per game frame, before its wait */
   if (++kb_idle > KB_STALE) {                   /* nothing pressed for a while: no hold is left */
     kb_idle = KB_STALE;
-    kf_a = kf_b = k_space = k_cr = k_fire_b = k_char_f = k_char = 0;
+    kf_a = kf_b = kp_a = kp_b = k_space = k_cr = k_fire_b = k_char_f = k_char = 0;
   }
   if ((seen & S_A) && kf_a) kf_a--;
   if ((seen & S_B) && kf_b) kf_b--;
+  hold_next(&kd_a, &kf_a, &kp_a);
+  hold_next(&kd_b, &kf_b, &kp_b);
   if ((seen & S_SPACE) && k_space) k_space--;
   if ((seen & S_CR) && k_cr) k_cr--;
   if ((seen & S_FIRE_B) && k_fire_b) k_fire_b--;
@@ -333,10 +348,26 @@ static void kb_age(void) {                      /* once per game frame, before i
   seen = 0;
 }
 
+/* The stick also counts as key set A (menus, lobby, room code, messages), except in a match where one local player
+ * has the keyboard and another one the stick: then each keeps its own. */
+static uint8_t joy_as_keys(void) {
+  uint8_t i, n, kbd = 0, joy = 0;
+  if (joy_type == JOY_NONE) return 0;
+  if (!title_mode) {
+    n = menu_net != NET_OFF ? menu_local : menu_players;
+    for (i = 0; i < n && i < MAX_PLAYERS; i++) {
+      if (menu_inputs[i] == INPUT_KBD_A) kbd = 1;
+      if (menu_inputs[i] == INPUT_JOY1) joy = 1;
+    }
+    if (kbd && joy) return 0;
+  }
+  return plat_joy(0);
+}
+
 uint8_t plat_keys_a(void) {
-  uint8_t k = 0;
+  uint8_t k = joy_as_keys();
   kb_poll();
-  if (kf_a) { k = kd_a; seen |= S_A; }
+  if (kf_a) { k |= kd_a; seen |= S_A; }
   if (kbd_alt_fire) {
     if (k_cr) { k |= KEY_SPACE; seen |= S_CR; }
   } else if (k_space) {
