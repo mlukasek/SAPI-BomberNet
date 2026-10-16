@@ -34,6 +34,18 @@ Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
    MPH-1V. Hra proti webu mzpico.com.
 3. Zrychlit porovnání buněk ve `flush_screen`, pokud to bude na skutečném SAPI potřeba.
 
+## První zkouška na skutečném SAPI (2026-10-16 v noci)
+
+- `BOMBNET.COM` na A: (`RD60.BIN`) i na SD kartě DPI. Spuštěno z konzole COM18, TURBO zapnuté, bez joysticku.
+- Titulek a menu fungují, Martin klávesnicí nastavil NETWORK HOST a mezerou založil místnost CZSY (DPI:
+  `in room`, 2 členové). SAPIemu (instance 8594, `tools/emu/join.py CZSY`) se připojil a dal READY.
+- **Problém 1:** v lobby mezera (SPACE READY) nereaguje, zápas nezačal. Na titulku mezera fungovala.
+  Hypotéza: v lobby se mezi snímky dlouho pracuje s DPI (STATUS, zprávy, WAIT), Consul bez 7474 dává STROBE jen
+  1 ms a stisk se ztratí; nebo palba držená 1 snímek nevytvoří hranu. Zjistit typ klávesnice, vyzkoušet v SAPIemu
+  s `strict` klávesnicí.
+- **Problém 2:** „divné barvy“ na skutečném CGA-1V. Zjistit, jak vypadají (foto). Podezření: nový zápis palety
+  v zatemnění (CONFIG 80h) nebo pořadí R, G, B a 6bitové hodnoty Bt476.
+
 ## Otevřené otázky
 
 - **Licence** repa (BomberNet nemá soubor LICENSE).
