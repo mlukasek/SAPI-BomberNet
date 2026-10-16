@@ -11,9 +11,10 @@ a Unicardem).
 
 ## Stav
 
-Rozpracováno. Hra lokálně běží v emulátoru SAPIemu a počítá stejně jako ostatní platformy (ověřeno nahrávkami
-z PC). Síťová hra čeká na emulaci DPI-1L v SAPIemu a na zkoušku na skutečném SAPI. Podrobnosti:
-[docs/stav.md](docs/stav.md).
+Hraje se. **Skutečné SAPI-1 s DPI-1L hraje proti emulátoru [SAPIemu](https://github.com/mlukasek/SAPIemu)**
+(od verze 0.6.0, sestava `sapi1v_BomberNet`) přes produkční relay `ws://api.mzpico.com/net`, i víc zápasů po
+sobě. Hra počítá stejně jako ostatní platformy (nahrávky z PC dávají na SAPI stejné hashe stavu). Zbývá vyzkoušet
+web mzpico.com a další platformy. Podrobnosti: [docs/stav.md](docs/stav.md).
 
 ## Co je potřeba
 
@@ -36,14 +37,21 @@ Klávesnice SAPI hlásí jen stisky: jeden stisk šipky = jedno políčko. Na pl
 ## Překlad
 
 ```
-git clone --recurse-submodules ...
+git clone --recurse-submodules https://github.com/mlukasek/SAPI-BomberNet.git
 build.cmd
 ```
 
-Výsledek je `build\bombnet.com` pro CP/M. Potřeba je z88dk, podrobnosti v [docs/vyvoj.md](docs/vyvoj.md).
+Výsledek je `build\bombnet.com` pro CP/M. Potřeba je z88dk (noční build, verze 2.4 jednu podmínku jádra
+přeloží špatně), podrobnosti v [docs/vyvoj.md](docs/vyvoj.md).
 Jak port funguje: [docs/technika.md](docs/technika.md).
 
-## Poděkování
+## Licence a poděkování
 
-- BomberNet: Martin Matyáš (MZPico), podle hry Bomber Man © 1983 Hudson Soft.
+Repo zatím nemá soubor LICENSE. Hra je odvozená z **Bomber Man © 1983 Hudson Soft** a jádro BomberNetu je bez
+licenčního souboru. `sapi/tables.c` obsahuje dlaždice vykreslené ze znakového generátoru MZ-700 (© Sharp),
+samotný generátor v repu není.
+
+- BomberNet: Martin Matyáš ([MZPico](https://github.com/MZPico/BomberNet)), přepis hry Bomber Man © 1983 Hudson Soft.
 - Hardwarová vrstva vychází z portu [SAPI-Bomberman](https://github.com/mlukasek/SAPI-Bomberman).
+- Síťová karta [DPI-1L](https://github.com/mlukasek/SAPI_DPI-1L) a její
+  [firmware](https://github.com/mlukasek/SAPI_DPI-firmware).

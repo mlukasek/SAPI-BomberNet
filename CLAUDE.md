@@ -28,7 +28,8 @@ Autor: Martin Lukášek (mlukasek). Komunikace s autorem **česky**, tykat.
   `..\SAPI_DPI-firmware\docs\sapiemu_dpi.md`.
 - **Autorská práva:** znakový generátor MZ-700 (`cgrom.bin`, © Sharp) do repa nepatří. `sapi/tables.c` z něj
   obsahuje vykreslené dlaždice (stejně jako `cpc/tables.c` v BomberNetu a `tables.asm` v SAPI-Bomberman).
-- **Licence:** zatím nerozhodnuto (BomberNet nemá soubor LICENSE). Před zveřejněním vyřešit s autorem.
+- **Licence:** bez souboru LICENSE (autor 2026-10-16, stejně jako SAPI-Bomberman): originál je Hudson Soft 1983,
+  BomberNet nemá licenční soubor. Repo je veřejné, `github.com/mlukasek/SAPI-BomberNet`.
 - **Git:** lokální commity průběžně, push jen na výslovné vyžádání. Na konec commitu patří řádek Co-Authored-By.
 - **Zápis poznatků:** důležité věci do `docs/`, stav do `docs/stav.md`.
 - **Reálný HW:** autor ho má (sestava a DPI-1L v `..\SAPI_DPI-firmware\docs\pracoviste.md`). Před akcí na

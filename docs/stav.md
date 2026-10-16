@@ -72,6 +72,6 @@ Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
 
 ## Otevřené otázky
 
-- **Licence** repa (BomberNet nemá soubor LICENSE).
+- Licence: repo zůstává bez LICENSE (autor 2026-10-16: originál Hudson Soft, BomberNet bez licenčního souboru).
 - Na autorově JPR-1V je TURBO rozpojené (2 MHz). BomberNet potřebuje 4 MHz.
 - EKL-1 má asi autorepeat: držená šipka přidává políčka (nejvýš 2 dopředu). Ověřit na skutečné klávesnici.
