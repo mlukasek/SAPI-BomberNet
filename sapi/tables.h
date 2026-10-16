@@ -8,5 +8,6 @@ extern const uint8_t sapi_title_idx[256];
 extern const uint8_t sapi_glyphs[520];
 extern const uint8_t sapi_game_glyph[256];
 extern const uint8_t sapi_player_attr[4];
+extern const uint8_t sapi_mark[48];
 extern const uint8_t sapi_palette[96];
 #endif

@@ -18,6 +18,7 @@ Written to sapi/tables.[ch]:
   sapi_glyphs       the glyphs of the game table, 8 bytes, bit 7 leftmost (the live renderer)
   sapi_game_glyph   logical code -> glyph (game mode)
   sapi_player_attr  CGA attribute of each player's colour (plat_player_colour)
+  sapi_mark         the cells "+ML" in the colour of the title text: SAPI's mark after "MZPICO" on the title
   sapi_palette      Bt476 colours 0..31: R, G, B (6 bits)
 """
 import argparse
@@ -84,6 +85,11 @@ def cell(g, at):
 
 game, title = table('game_table'), table('title_table')
 player_attr = bytes(attr_of(m) for m in PLAYER_MZ_ATTR)
+MZ_PLUS = 0x6a                                  # '+' in the MZ display codes (the title table has none)
+text_attr = title[2 * ord('M') + 1]
+mark = render(glyph(MZ_PLUS, text_attr), attr_of(text_attr))
+for ch in 'ML':
+    mark += render(glyph(title[2 * ord(ch)], text_attr), attr_of(text_attr))
 game_idx = bytes(cell(glyph(game[2 * c], game[2 * c + 1]), attr_of(game[2 * c + 1])) for c in range(256))
 title_idx = bytes(cell(glyph(title[2 * c], title[2 * c + 1]), attr_of(title[2 * c + 1])) for c in range(256))
 assert len(cells) <= 256, len(cells)
@@ -124,6 +130,7 @@ with open(os.path.join(out, 'tables.c'), 'w', newline='\n') as f:
         carray('sapi_glyphs', b''.join(glyphs), 8, f'{len(glyphs)} glyphs of the game table, bit 7 leftmost'),
         carray('sapi_game_glyph', game_glyph, 16, 'game mode: logical code -> glyph'),
         carray('sapi_player_attr', player_attr, 4, 'CGA attribute of each player colour'),
+        carray('sapi_mark', mark, 16, '"+ML" after "MZPICO" on the title, 3 cells'),
         carray('sapi_palette', palette, 12,
                f'Bt476 colours 0..31 (R, G, B, 6 bits): attribute * 2 = background, + 1 = foreground; '
                f'{len(attrs)} attributes used')]))
@@ -133,6 +140,7 @@ with open(os.path.join(out, 'tables.h'), 'w', newline='\n') as f:
         f'extern const uint8_t sapi_cells[{len(cells) * 16}];',
         'extern const uint8_t sapi_game_idx[256];', 'extern const uint8_t sapi_title_idx[256];',
         f'extern const uint8_t sapi_glyphs[{len(glyphs) * 8}];', 'extern const uint8_t sapi_game_glyph[256];',
-        'extern const uint8_t sapi_player_attr[4];', 'extern const uint8_t sapi_palette[96];', '#endif', '']))
+        'extern const uint8_t sapi_player_attr[4];', 'extern const uint8_t sapi_mark[48];',
+        'extern const uint8_t sapi_palette[96];', '#endif', '']))
 print(f'sapi/tables.[ch]: {len(cells)} cells, {len(glyphs)} glyphs, {len(attrs)} attributes {attrs}, '
       f'{len(cells) * 16 + 512 + len(glyphs) * 8 + 256 + 4 + 96} bytes')

@@ -40,6 +40,10 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
   - **219 předkreslených buněk** po 16 bajtech, tabulka logický kód → buňka zvlášť pro hru a pro titulek;
   - **8 atributů**: barvy popředí MZ na černém pozadí (hra jiné pozadí nepoužívá);
   - pro barvy hráčů při umírání (`plat_player_colour`) ještě 65 znaků a atributy hráčů.
+- **Značka portu na titulku:** za „MZPICO“ (řádek 23, sloupce 28–30) je „+ML“: tahle verze pro SAPI.
+  Kreslí se přímo do CGA po `flush_screen` (`title_mark`), jen když je v `shadow_vram` text „MZPICO“ a za ním
+  volno. Jádro ani `draw_buf` se nemění. Znak „+“ titulková tabulka MZ nemá: `make_tables.py` ho bere ze
+  znakového generátoru (kód 6Ah).
 - `flush_screen` (jako na CPC):
   - porovná všech 1000 buněk `draw_buf` se `shadow_vram` (rozvinutá smyčka, nezměněná buňka 36 taktů);
   - změněnou buňku zkopíruje z předkreslených dat;

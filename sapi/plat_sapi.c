@@ -578,6 +578,30 @@ void plat_player_colour(uint8_t x, uint8_t y, uint8_t player) {
   }
 }
 
+/* "+ML" after "MZPICO" on the title (row 23, columns 28-30): this SAPI port, modified by Martin Lukášek. Drawn
+ * straight into the CGA after the flush, so draw_buf and the core stay as they are; the cells there are blank in the
+ * draw buffer, the flush does not touch them again, but after a wipe of the screen they are drawn anew. */
+#define MARK_ROW 23
+#define MARK_COL 28
+static const char mzpico[] = "MZPICO";
+
+static void title_mark(void) {
+  const uint8_t *v = shadow_vram + MARK_ROW * SCREEN_W;
+  const uint8_t *c = sapi_mark;
+  uint8_t *s;
+  uint8_t i, k;
+  if (!title_mode) return;
+  for (i = 0; i < 6; i++) if (v[MARK_COL - 6 + i] != (uint8_t)mzpico[i]) return;
+  for (i = 0; i < 3; i++) if (v[MARK_COL + i] != C_SPACE) return;
+  for (k = 0; k < 3; k++) {
+    s = (uint8_t *)(CGA + MARK_ROW * 640 + (MARK_COL + k) * 2);
+    for (i = 0; i < 8; i++, s += 80, c += 2) {
+      s[0] = c[0];
+      s[1] = c[1];
+    }
+  }
+}
+
 /* flush_screen: draw_buf -> screen, changed cells only; clears draw_buf. After clear_buffers the screen is wiped
  * in one pass and only the cells that are not blank are drawn. The interrupts are off (plat_init): the wipe and
  * the clear push with SP. */
@@ -635,6 +659,7 @@ fs_clr:
     push hl
     djnz fs_clr
     ld   sp,(fs_sp)
+    call _title_mark
     jp   _tone_poll
 
 fs_chg:                     ; A = new code, HL = shadow, DE = draw buffer
