@@ -392,12 +392,14 @@ static void ei_now(void) __naked {
   __endasm;
 }
 
-static void pal_load(void) __naked {            /* Bt476 colours 0..31, fast enough for the vertical blanking */
+/* Bt476 colours 0..31, fast enough for the vertical blanking. Plain numbers here: the C macros expand to
+ * "(0xc000 + ...)", and "ld de,(...)" would load DE from memory. */
+static void pal_load(void) __naked {
   __asm
     xor  a
-    ld   (CGA_PAL_ADDR),a
+    ld   (0xfffc),a         ; CGA_PAL_ADDR
     ld   hl,_sapi_palette
-    ld   de,CGA_PAL_DATA
+    ld   de,0xfffd          ; CGA_PAL_DATA
     ld   b,96
 pl_loop:
     ld   a,(hl)

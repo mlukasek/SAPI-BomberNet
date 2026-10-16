@@ -29,9 +29,8 @@ Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
 
 ## Další kroky
 
-1. **Síť v emulátoru:** dvě SAPIemu proti sobě hotovo. Zbývá SAPIemu proti webu mzpico.com (MZ-800).
-2. **Skutečné SAPI s DPI-1L** (DPI už NET umí): `BOMBNET.COM` přes `DPI GET` ze SD, TURBO zapnuté, joystick na
-   MPH-1V. Hra proti webu mzpico.com.
+1. Proti webu mzpico.com (MZ-800) a dalším platformám, hra s joystickem.
+2. SD karta v DPI: dvakrát přestala fungovat (firmware: zotavení po chybě, SPI 12,5 MHz).
 3. Zrychlit porovnání buněk ve `flush_screen`, pokud to bude na skutečném SAPI potřeba.
 
 ## První zkouška na skutečném SAPI (2026-10-16 v noci)
@@ -45,6 +44,16 @@ Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
   s `strict` klávesnicí.
 - **Problém 2:** „divné barvy“ na skutečném CGA-1V. Zjistit, jak vypadají (foto). Podezření: nový zápis palety
   v zatemnění (CONFIG 80h) nebo pořadí R, G, B a 6bitové hodnoty Bt476.
+
+## Skutečné SAPI hraje (2026-10-16 ráno)
+
+- **Divné barvy** byly chyba v `pal_load`: makro `CGA_PAL_DATA` se v asm rozvinulo na `(0xc000 + …)` a
+  `ld de,(…)` načetlo DE z paměti. Paleta se nenahrála a 96 bajtů se zapsalo jinam. Opraveno (čísla v asm).
+- **Mezera v lobby** fungovala, READY ale nedošlo na relay: chyba firmwaru DPI (rámec WebSocketu dvěma
+  `tcp_write`, malá halda lwIP), opraveno ve firmwaru (`..\SAPI_DPI-firmware\docs\mereni.md`).
+- **Zápas skutečné SAPI (host, klávesnice, TURBO) × SAPIemu 0.6.0 přes produkční relay běží**, 59 ms na snímek,
+  bez desynchronizace. Martin: „teď to hraje“.
+- `BOMBNET.COM` je i na RAM disku sestavy `sapi1v_BomberNet` v SAPIemu-release (A:, CP/M volbou 3).
 
 ## Otevřené otázky
 

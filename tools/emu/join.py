@@ -55,7 +55,7 @@ emu.screenshot(os.path.join(shots, 'lobby.png'))
 print('joined?', status())
 mcp.call('type_text', text=' ')                 # ready
 t0 = time.time()
-while time.time() - t0 < 120 and not peek('_net_active')[0]:
+while time.time() - t0 < 900 and not peek('_net_active')[0]:
     time.sleep(1)
 print('match' if peek('_net_active')[0] else 'no match yet', status())
 t0 = time.time()
