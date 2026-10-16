@@ -17,12 +17,12 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
 
 | Adresa | Obsah |
 |---|---|
-| 0100–~85CA | program a tabulky (`build\bombnet.map`) |
-| ~85CB–~92D8 | proměnné jádra i platformy (BSS je v souboru `.COM`), `draw_buf`, `map_layer`, `shadow_vram` |
-| ~92D9–BFFF | zásobník (shora od C000h, `REGISTER_SP` v `build.cmd`) |
+| 0100–~8916 | program a tabulky (`build\bombnet.map`) |
+| ~8917–~9605 | proměnné jádra i platformy (BSS je v souboru `.COM`), `draw_buf`, `map_layer`, `shadow_vram` |
+| ~9606–BFFF | zásobník (shora od C000h, `REGISTER_SP` v `build.cmd`) |
 | C000–FFFF | během hry CGA-1V, RAM pod ní je skrytá (CCP a BDOS) |
 
-- `BOMBNET.COM` má asi 37 KB a musí končit pod C000h.
+- `BOMBNET.COM` má asi 38 KB (stav 2026-10-16) a musí končit pod C000h.
 - Během hry se nevolá CP/M (BDOS je pod CGA) a přerušení jsou zakázaná. Na tom stojí mazání obrazovky
   a `draw_buf` přes `PUSH` ve `flush_screen`.
 - Ctrl+C vrátí do CP/M: opustí síťovou místnost, ztiší zvuk, vrátí RAM na C000h, obnoví přerušení a skončí

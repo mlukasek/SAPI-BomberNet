@@ -6,72 +6,59 @@ Síťový BomberNet na skutečném SAPI-1 s DPI-1L v jedné místnosti se SAPI v
 skutečným MZ-800, ZX Spectrem, CPC, PC a kýmkoli dalším přes relay `ws://api.mzpico.com/net`.
 Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
 
-## Hotovo (2026-10-16)
+## Stav (2026-10-16)
 
-- Repo se submodulem BomberNet (`c6d40a0`, verze 0.2.0, `BUILD_ID 0604h`).
-- Platforma SAPI (`sapi/`): CGA-1V, 82C54, YM3812, klávesnice Consul 262.3 a EKL-1, joystick MPH-1V, porty
-  DPI-1L. `BOMBNET.COM` asi 37 KB.
-- V SAPIemu 0.5.0:
-  - titulek, menu a hra se kreslí správně, zvuk hraje;
-  - šipky (Consul) i joystick hráče vedou, palba pokládá bomby;
-  - **determinismus:** nahrávky z PC simulátoru dávají na SAPI stejné hashe v každém snímku:
-    kooperace 1 hráč 447 snímků, deathmatch 2 hráči 993, deathmatch 4 hráči 1499, kooperace 4 hráči 819,
-    0 rozdílů;
-  - rychlost: při 4 MHz medián 43–46 ms na snímek, 90 % do 58 ms (podobně jako skutečné CPC). **Při 2 MHz
-    nehratelné** (91 ms).
-- **Síťový zápas dvou SAPI v SAPIemu 0.6.0** (karta DPI-1L) přes produkční relay `ws://api.mzpico.com/net`
-  (`tools/emu/netplay.py`): lobby (založení, kód, připojení, READY), deathmatch 90 s s náhodným pohybem joystickem
-  a bombami, 8 kol, bez desynchronizace, obě obrazovky shodné.
-- **Chyba z88dk 2.4** (2025-10-02): ternární operátor v `net_lockstep_poll` přeložen špatně, síťový zápas pak
-  nedostal žádné klávesy. Překlad teď noční z88dk (`Tools\z88dk-nightly`, 2026-10-15), jako BomberNet (snap edge).
-  Všechny nahrávky znovu ověřené, 0 rozdílů.
-- Paleta CGA-1V se zapisuje v zatemnění (STATUS D7), jinak by skutečný Bt476 ukázal rušené body.
+**Hraje se: skutečné SAPI-1 s DPI-1L proti SAPIemu 0.6.0 přes produkční relay**, i víc zápasů po sobě, bez
+desynchronizace (Martin: „teď to hraje“). Repo je veřejné: `github.com/mlukasek/SAPI-BomberNet` (bez LICENSE).
+
+| Co | Stav |
+|---|---|
+| Jádro | BomberNet `c6d40a0` jako submodul, verze 0.2.0, `BUILD_ID 0604h`, beze změny |
+| Platforma SAPI | `sapi/`: CGA-1V, 82C54, YM3812, Consul 262.3 a EKL-1, joystick MPH-1V, porty DPI-1L; `BOMBNET.COM` asi 38 KB |
+| Determinismus | nahrávky z PC simulátoru: kooperace 1 hráč 447 snímků, deathmatch 2 hráči 993, deathmatch 4 hráči 1499, kooperace 4 hráči 819, **0 rozdílů** hashe |
+| Rychlost | 4 MHz: medián 43–46 ms na snímek, 90 % do 58 ms (jako skutečné CPC). **2 MHz nehratelné** (91 ms), TURBO nutné |
+| Síť v emulátoru | dvě SAPIemu 0.6.0 (karta DPI-1L) spolu: 8 kol deathmatche bez desynchronizace (`tools/emu/netplay.py`) |
+| Skutečné SAPI | host (klávesnice, TURBO) × SAPIemu (CLI i GUI): plynule 59 ms na snímek, 5 zápasů po sobě bez restartu |
+| Ovládání | šipky po celých políčkách (i rychlé ťukání a zatáčení), joystick ve hře i v menu |
+| Titulek | „MZPICO+ML V0.2.0“: značka verze pro SAPI, kreslí ji platforma |
+
+## Kde je hra
+
+- Skutečné SAPI: `BOMBNET.COM` na disku A: (emulovaný RAM disk DPI, `/RAMDISK/RD60.BIN`) a v kořeni SD karty DPI
+  (`DPI GET BOMBNET.COM`).
+- SAPIemu-release: na RAM disku sestavy `sapi1v_BomberNet` (A:, ECMON volba **3**, pak `BOMBNET`).
+- Nasazení nové verze: `docs/vyvoj.md`, Nasazení.
+
+## Opravené chyby (2026-10-16)
+
+- **Chyba z88dk 2.4** (2025-10-02): ternární operátor v `net_lockstep_poll` přeložen špatně, síťový zápas
+  nedostal žádné klávesy. Překlad nočním z88dk (`Tools\z88dk-nightly`, 2026-10-15), jako BomberNet (snap edge).
+- **Paleta:** `ld de,(…)` z rozvinutého C makra načetlo DE z paměti (na skutečném SAPI „žluté“ barvy a 96 bajtů
+  zapsaných jinam). Teď čísla v asm, paleta v zatemnění (STATUS D7).
+- **READY hostitele nedošlo na relay:** chyba firmwaru DPI (rámec WebSocketu dvěma `tcp_write`, halda lwIP 4000 B),
+  opraveno ve firmwaru (`..\SAPI_DPI-firmware\docs\mereni.md`).
+- **Mezipolohy z klávesnice** (tři příčiny):
+  1. stisk stárnul i ve snímku, ve kterém ho hra nepřečetla;
+  2. jiný směr přepsal rozdělané políčko;
+  3. strop podržení uřízl přidané políčko.
+
+  Test `taps.py --fast`: předchozí verze 21 mezipoloh ze 120 ťuknutí, nová 0. Předávka pro assemblerovou verzi:
+  `..\SAPI-Bomberman\docs\predavka-klavesnice.md`.
+- **Mezera na titulku položila bombu** v prvním snímku zápasu: palba teď platí jeden snímek.
 
 ## Další kroky
 
-1. Proti webu mzpico.com (MZ-800) a dalším platformám, hra s joystickem.
-2. SD karta v DPI: dvakrát přestala fungovat (firmware: zotavení po chybě, SPI 12,5 MHz).
-3. Zrychlit porovnání buněk ve `flush_screen`, pokud to bude na skutečném SAPI potřeba.
-
-## První zkouška na skutečném SAPI (2026-10-16 v noci)
-
-- `BOMBNET.COM` na A: (`RD60.BIN`) i na SD kartě DPI. Spuštěno z konzole COM18, TURBO zapnuté, bez joysticku.
-- Titulek a menu fungují, Martin klávesnicí nastavil NETWORK HOST a mezerou založil místnost CZSY (DPI:
-  `in room`, 2 členové). SAPIemu (instance 8594, `tools/emu/join.py CZSY`) se připojil a dal READY.
-- **Problém 1:** v lobby mezera (SPACE READY) nereaguje, zápas nezačal. Na titulku mezera fungovala.
-  Hypotéza: v lobby se mezi snímky dlouho pracuje s DPI (STATUS, zprávy, WAIT), Consul bez 7474 dává STROBE jen
-  1 ms a stisk se ztratí; nebo palba držená 1 snímek nevytvoří hranu. Zjistit typ klávesnice, vyzkoušet v SAPIemu
-  s `strict` klávesnicí.
-- **Problém 2:** „divné barvy“ na skutečném CGA-1V. Zjistit, jak vypadají (foto). Podezření: nový zápis palety
-  v zatemnění (CONFIG 80h) nebo pořadí R, G, B a 6bitové hodnoty Bt476.
-
-## Skutečné SAPI hraje (2026-10-16 ráno)
-
-- **Divné barvy** byly chyba v `pal_load`: makro `CGA_PAL_DATA` se v asm rozvinulo na `(0xc000 + …)` a
-  `ld de,(…)` načetlo DE z paměti. Paleta se nenahrála a 96 bajtů se zapsalo jinam. Opraveno (čísla v asm).
-- **Mezera v lobby** fungovala, READY ale nedošlo na relay: chyba firmwaru DPI (rámec WebSocketu dvěma
-  `tcp_write`, malá halda lwIP), opraveno ve firmwaru (`..\SAPI_DPI-firmware\docs\mereni.md`).
-- **Zápas skutečné SAPI (host, klávesnice, TURBO) × SAPIemu 0.6.0 přes produkční relay běží**, 59 ms na snímek,
-  bez desynchronizace. Martin: „teď to hraje“.
-- `BOMBNET.COM` je i na RAM disku sestavy `sapi1v_BomberNet` v SAPIemu-release (A:, CP/M volbou 3).
-
-- **Klávesnice: půlkroky** (Martin: „občas kročí o jednu polovinu“). Stisk šipky stárnul každý snímek, i když ho hra
-  v tom snímku nepřečetla (zachycený uprostřed snímku nebo při čekání lockstepu na síť), a vydržel jen 3 čtení.
-  Teď stárne jen přečtený stisk (`seen`), klávesnice se čte před vyhodnocením, nečtené stisky zmizí po 20 snímcích
-  bez klávesy. `tools/emu/taps.py`: 40 ťuknutí v náhodném okamžiku snímku, 0 půlkroků.
-- **Mezipolohy podruhé** (Martin, snímek s hráčem v půlce políčka): jiný směr během kroku přepsal rozdělané
-  políčko a strop podržení (8 snímků) uřízl část přidaného políčka. Teď další směr počká na dokončení políčka a
-  další políčko se přidá jen celé. `taps.py --fast` (120 ťuknutí 0–300 ms po sobě): předchozí verze 21 mezipoloh,
-  nová 0.
-- **Joystick i v menu** (Martin: „bez klávesnice to v menu nejde“): páka a palba platí i jako klávesy sady A
-  (menu, lobby, kód místnosti, hlášky), kromě zápasu, kde má jeden místní hráč klávesnici a druhý joystick.
-- **Desync jednou** (SAPI host po předchozím zápase, GUI SAPIemu čerstvě JOIN, mapy se lišily od začátku).
-  Nezopakoval se: v emulátorech v obou pořadích (čerstvý × použitý) bez desyncu, Martin pak 5 zápasů po sobě SAPI
-  × GUI bez restartu bez desyncu (`tools/emu/watch.py`). Příčina neznámá, při dalším výskytu porovnat záznam
-  `watch.py` (seed, místa, hashe).
+1. Proti webu mzpico.com (MZ-800) a dalším platformám, hra s joystickem na skutečném SAPI.
+2. Firmware DPI: SD karta dvakrát za běhu přestala odpovídat (zotavení po chybě, SPI 12,5 MHz), druhý USB port
+   (COM18) jednou přestal přenášet (`..\SAPI_DPI-firmware\docs\mereni.md`).
+3. Zrychlit porovnání buněk ve `flush_screen` (asi 9 ms), pokud to bude potřeba.
 
 ## Otevřené otázky
 
-- Licence: repo zůstává bez LICENSE (autor 2026-10-16: originál Hudson Soft, BomberNet bez licenčního souboru).
-- Na autorově JPR-1V je TURBO rozpojené (2 MHz). BomberNet potřebuje 4 MHz.
-- EKL-1 má asi autorepeat: držená šipka přidává políčka (nejvýš 2 dopředu). Ověřit na skutečné klávesnici.
+- **Desync jednou** (SAPI host po předchozím zápase, GUI SAPIemu čerstvě JOIN, mapy se lišily od začátku).
+  Nezopakoval se: v emulátorech v obou pořadích (čerstvý × použitý) ani v 5 zápasech SAPI × GUI po sobě
+  (`tools/emu/watch.py`). Při dalším výskytu porovnat záznam `watch.py` (seed, místa, hashe) z obou stran.
+- Na autorově JPR-1V je TURBO normálně rozpojené (2 MHz). BomberNet potřebuje 4 MHz.
+- EKL-1 má asi autorepeat: držená šipka přidává políčka (nejvýš jedno dopředu). Ověřit na skutečné klávesnici.
+- Po Ctrl+C (konec hry do CP/M) se konzole CP/M může přepnout ze sériové linky na AND-1V (podle DCD při teplém
+  startu). Pro nástroje na COM18 pak `load.py --reset serial --boot 3`.

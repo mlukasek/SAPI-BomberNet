@@ -9,6 +9,12 @@ karta **[DPI-1L](https://github.com/mlukasek/SAPI_DPI-1L)** s firmwarem
 [SAPI_DPI-firmware](https://github.com/mlukasek/SAPI_DPI-firmware) (Repository API a NET kompatibilní s MZPico
 a Unicardem).
 
+| Titulek | Lobby síťové hry | Zápas dvou SAPI |
+|---|---|---|
+| ![Titulek](docs/img/title.png) | ![Lobby](docs/img/lobby.png) | ![Zápas](docs/img/game.png) |
+
+*Snímky z emulátoru SAPIemu (CGA-1V, 320×200).*
+
 ## Stav
 
 Hraje se. **Skutečné SAPI-1 s DPI-1L hraje proti emulátoru [SAPIemu](https://github.com/mlukasek/SAPIemu)**
@@ -27,12 +33,17 @@ web mzpico.com a další platformy. Podrobnosti: [docs/stav.md](docs/stav.md).
 
 | | Klávesnice | Joystick |
 |---|---|---|
-| pohyb | šipky (sada A), W A S D (sada B) | páka |
+| pohyb, výběr v menu | šipky (sada A), W A S D (sada B) | páka |
 | bomba, potvrzení | mezera (sada A), E (sada B) | palba |
-| kód místnosti | písmena, BS/DEL maže, ESC/BREAK zruší | |
+| kód místnosti | písmena, BS/DEL maže, ESC/BREAK zruší | páka (písmeno a pozice), palba |
 | konec do CP/M | Ctrl+C | |
 
-Klávesnice SAPI hlásí jen stisky: jeden stisk šipky = jedno políčko. Na plynulé hraní je lepší joystick.
+- Klávesnice SAPI hlásí jen stisky: jeden stisk šipky = jedno celé políčko, další stisk během kroku přidá políčko
+  nebo zatočí na dalším políčku. Na plynulé hraní je lepší joystick.
+- Joystick (v menu JOYSTICK: MPH-1V, hráč: JOYSTICK MPH-1V) ovládá i menu a lobby.
+- Síťová hra: v menu NETWORK HOST (založí místnost, ukáže kód) nebo JOIN (zadá se kód), pak READY mezerou nebo
+  palbou. Hostitel může dát READY kdykoli, hra počká na ostatní.
+- V SAPIemu zapne Ctrl+F8 joystick z klávesnice PC (šipky a mezerník pak nejdou do klávesnice SAPI).
 
 ## Překlad
 

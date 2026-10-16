@@ -14,7 +14,7 @@ Po klonování: `git submodule update --init` (BomberNet).
 
 ## Překlad
 
-- `build.cmd` → `build\bombnet.com` (asi 37 KB) a `build\bombnet.map` (symboly pro skripty).
+- `build.cmd` → `build\bombnet.com` (asi 38 KB) a `build\bombnet.map` (symboly pro skripty).
 - Optimalizace z88dk: proměnná `ZOPT` (výchozí `-O2`; `-O3` nic nezrychlí).
 - Tabulky obrazovky po změně tabulek MZ v BomberNetu: `python tools/make_tables.py [--cgrom SOUBOR]`.
 
@@ -42,7 +42,35 @@ Po klonování: `git submodule update --init` (BomberNet).
 | `replay.py NAHRÁVKA.bnr [--bench] [--slow] [--frames N]` | přehraje nahrávku z PC simulátoru a porovná hash stavu v každém snímku; `--bench` měří práci snímku |
 | `trace.py SYMBOL...` | spustí hru a běží od symbolu k symbolu (ladění startu) |
 | `netplay.py [--seconds N] [--mode 0\|1]` | síťový zápas dvou instancí (8593 založí místnost, 8594 se připojí kódem), náhodný pohyb joystickem; snímky v `build/netplay` |
+| `join.py KÓD [--seconds N] [--idle]` | SAPI v emulátoru se připojí do místnosti (třeba ze skutečného SAPI), dá READY a hraje joystickem |
+| `rematch.py [--used-hosts]` | zápas čerstvé instance (8593) proti instanci po předchozím zápase (8594): hledání desyncu mezi zápasy |
+| `watch.py [--minutes N]` | jen čte paměť: při každém zápase seed, místa, zpoždění, pozice, hash každých 16 snímků, konec; i pro GUI (`SAPIEMU_MCP=…:8580`) |
+| `taps.py [--taps N] [--fast]` | ťuká šipkami v náhodných okamžicích snímku a hlídá, že hráč skončí na celém políčku |
 | `emu.py`, `sapimcp.py` | společné: symboly, kontrolní bod CP/M, snímek obrazovky, klient MCP |
+
+## Nasazení nové verze
+
+**Skutečné SAPI** (DPI-1L, konzole CP/M na COM18, nástroje v `..\SAPI_DPI-firmware\tools`):
+
+```
+python tools/load.py --reset serial --boot 3 --com COM18      # CP/M s konzolí na COM18 (když na ní není)
+python tools/cpm_run.py --port COM18 "ERA BOMBNET.COM"
+python tools/xmodem_send.py ../SAPI-BomberNet/build/bombnet.com BOMBNET.COM --port COM18
+python tools/dpi_console.py "zrd flush"                       # RAM disk hned na SD kartu
+python tools/cpm_run.py --port COM18 --timeout 3 "BOMBNET"
+```
+
+- Na SD kartu DPI ještě `DPI PUT BOMBNET.COM` v CP/M. `sdput.py` s firmwarem 0.2 nefunguje (příkaz `fput`).
+- Když COM18 neodpovídá ani po resetu SAPI (DSM-1 `received` v `cards` stojí): restart DPI
+  (`load.py firmware --reset serial --boot 3 --com COM18`), `..\SAPI_DPI-firmware\docs\mereni.md`.
+
+**SAPIemu-release, sestava `sapi1v_BomberNet`** (RAM disk A: v `work\zrmd-1`, sdílí ho i `sapi1v.sapi`):
+- GUI musí být zavřené, jinak by RAM disk při ukončení přepsalo.
+- `sapiemu-cli --machine machines/sapi1v_BomberNet.sapi --mcp --mcp-port 8595`, pak přes MCP:
+  1. power cycle, ECMON `3`, výzva `A>`;
+  2. `load_binary` na 0100h, `ERA A:BOMBNET.COM`;
+  3. **`SAVE n A:BOMBNET.COM` s n = ⌈velikost / 256⌉** (`SAVE 149` pro 38 150 B by uřízlo 6 B);
+  4. `quit`: vypne stroj a uloží RAM disk.
 
 ## Nahrávky a determinismus
 
@@ -73,6 +101,10 @@ SIM_MODE=0 SIM_PLAYERS=4 SIM_SEED=0x0BB1 SIM_RECORD=coop4.bnr ./sim 1500 5
   jinde přehrát nedá.
 
 ## Pasti
+
+- **C makra v inline asm z88dk:** makro se rozvine i se závorkami (`#define X (0xc000 + 0x3ffd)`), takže
+  `ld de,X` je `ld de,(…)`, tedy načtení z paměti. V asm používat čísla nebo makra bez závorek.
+- **CP/M sestavy V naběhne jen volbou ECMONu 3** (volby 0–2 čekají na řadič disket).
 
 - **z88dk 2.4 (2025-10-02) přeloží špatně ternární operátor** s podmínkou `a && b && …` v `net_lockstep_poll`
   (`BomberNet/c/core/netplay.c`): výsledek podmínky uloží do HL, ale skočí podle příznaku C, který poslední test
