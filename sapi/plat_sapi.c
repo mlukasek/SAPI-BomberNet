@@ -259,6 +259,17 @@ static uint8_t kd_a, kf_a;                       /* key set A: direction mask, f
 static uint8_t kd_b, kf_b;                       /* key set B (W A S D) */
 static uint8_t k_space, k_cr, k_fire_b;          /* frames left */
 static uint8_t k_char, k_char_f;
+/* A hold ages only in a frame in which the game read it: a press caught in the middle of a frame (while reading the
+ * keys, or while the lockstep waits for the network) still gets all its frames, so a cursor key always walks a whole
+ * cell. Holds the game does not read go away after KB_STALE frames without a key. */
+#define S_A      0x01
+#define S_B      0x02
+#define S_SPACE  0x04
+#define S_CR     0x08
+#define S_FIRE_B 0x10
+#define S_CHAR   0x20
+#define KB_STALE 20
+static uint8_t seen, kb_idle;
 
 void plat_exit(void);
 
@@ -274,6 +285,7 @@ static void hold_dir(uint8_t *dir, uint8_t *frames, uint8_t mask) {
 
 static void kb_key(uint8_t c) {
   uint8_t u = (c >= 'a' && c <= 'z') ? (uint8_t)(c - 32) : c;
+  kb_idle = 0;
   switch (c) {
   case 0xc1: case 0x05: hold_dir(&kd_a, &kf_a, KEY_UP); return;        /* Consul C1-C4, EKL-1 WordStar */
   case 0xc2: case 0x18: hold_dir(&kd_a, &kf_a, KEY_DOWN); return;
@@ -307,32 +319,44 @@ static void kb_poll(void) {
   kb_key(c);
 }
 
-static void kb_age(void) {                      /* once per game frame, before its wait: a press caught while
-                                                   waiting counts from the frame that follows */
-  if (kf_a) kf_a--;
-  if (kf_b) kf_b--;
-  if (k_space) k_space--;
-  if (k_cr) k_cr--;
-  if (k_fire_b) k_fire_b--;
-  if (k_char_f && !--k_char_f) k_char = 0;
+static void kb_age(void) {                      /* once per game frame, before its wait */
+  if (++kb_idle > KB_STALE) {                   /* nothing pressed for a while: no hold is left */
+    kb_idle = KB_STALE;
+    kf_a = kf_b = k_space = k_cr = k_fire_b = k_char_f = k_char = 0;
+  }
+  if ((seen & S_A) && kf_a) kf_a--;
+  if ((seen & S_B) && kf_b) kf_b--;
+  if ((seen & S_SPACE) && k_space) k_space--;
+  if ((seen & S_CR) && k_cr) k_cr--;
+  if ((seen & S_FIRE_B) && k_fire_b) k_fire_b--;
+  if ((seen & S_CHAR) && k_char_f && !--k_char_f) k_char = 0;
+  seen = 0;
 }
 
 uint8_t plat_keys_a(void) {
-  uint8_t k = kf_a ? kd_a : 0;
+  uint8_t k = 0;
   kb_poll();
-  if (kbd_alt_fire ? k_cr : k_space) k |= KEY_SPACE;
+  if (kf_a) { k = kd_a; seen |= S_A; }
+  if (kbd_alt_fire) {
+    if (k_cr) { k |= KEY_SPACE; seen |= S_CR; }
+  } else if (k_space) {
+    k |= KEY_SPACE;
+    seen |= S_SPACE;
+  }
   return k;
 }
 
 uint8_t plat_keys_b(void) {
-  uint8_t k = kf_b ? kd_b : 0;
+  uint8_t k = 0;
   kb_poll();
-  if (k_fire_b) k |= KEY_SPACE;
+  if (kf_b) { k = kd_b; seen |= S_B; }
+  if (k_fire_b) { k |= KEY_SPACE; seen |= S_FIRE_B; }
   return k;
 }
 
 uint8_t plat_key_char(void) {
   kb_poll();
+  if (k_char_f) seen |= S_CHAR;
   return k_char;
 }
 

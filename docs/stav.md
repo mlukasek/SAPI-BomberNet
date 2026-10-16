@@ -55,6 +55,15 @@ Plán: `..\SAPI_DPI-firmware\docs\plan_faze2.md` (BomberNet na SAPI).
   bez desynchronizace. Martin: „teď to hraje“.
 - `BOMBNET.COM` je i na RAM disku sestavy `sapi1v_BomberNet` v SAPIemu-release (A:, CP/M volbou 3).
 
+- **Klávesnice: půlkroky** (Martin: „občas kročí o jednu polovinu“). Stisk šipky stárnul každý snímek, i když ho hra
+  v tom snímku nepřečetla (zachycený uprostřed snímku nebo při čekání lockstepu na síť), a vydržel jen 3 čtení.
+  Teď stárne jen přečtený stisk (`seen`), klávesnice se čte před vyhodnocením, nečtené stisky zmizí po 20 snímcích
+  bez klávesy. `tools/emu/taps.py`: 40 ťuknutí v náhodném okamžiku snímku, 0 půlkroků.
+- **Desync jednou** (SAPI host po předchozím zápase, GUI SAPIemu čerstvě JOIN, mapy se lišily od začátku).
+  Nezopakoval se: v emulátorech v obou pořadích (čerstvý × použitý) bez desyncu, Martin pak 5 zápasů po sobě SAPI
+  × GUI bez restartu bez desyncu (`tools/emu/watch.py`). Příčina neznámá, při dalším výskytu porovnat záznam
+  `watch.py` (seed, místa, hashe).
+
 ## Otevřené otázky
 
 - **Licence** repa (BomberNet nemá soubor LICENSE).
