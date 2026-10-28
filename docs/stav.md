@@ -21,6 +21,7 @@ desynchronizace (Martin: „teď to hraje“, ještě s verzí 0.2.0). Repo je v
 | Rychlost | 4 MHz: medián 38 ms na snímek, 90 % do 52 ms (0.2.0: 46 a 58 ms). **2 MHz nehratelné** (medián 75 ms), TURBO nutné |
 | Síť v emulátoru | dvě SAPIemu 0.6.0 (karta DPI-1L) s 0.3.0: celý zápas deathmatche (2203 snímků, po opravě klávesnice znovu 1597) bez desynchronizace; 0.3.0 × 0.2.0 v obou rolích bez desynchronizace (`tools/emu/netplay.py`) |
 | Skutečné SAPI | 0.3.0 od 2026-10-28 na A: (ZRMD-1, sestava s DPI-1): Martin „funguje to jako víno“; s 0.2.0 dřív host (klávesnice, TURBO) × SAPIemu (CLI i GUI): plynule 59 ms na snímek, 5 zápasů po sobě bez restartu |
+| Vývojový SAPIemu | 0.7.0-alpha (GUI, release build), herní sestava `sapi1v_BomberNet` s RAM diskem `media/zrmd-1/bombernet.bin` (0.3.0, MD5 800a0d8f…): Martin 2026-10-28 vyzkoušel, „funguje parádně“, stejně jako na skutečném SAPI-1 |
 | Ovládání | šipky po celých políčkách (i rychlé ťukání a zatáčení), joystick ve hře i v menu, ESC/BREAK opustí zápas během hry (v síťovém zápase ne během hlášky na konci kola: chyba jádra, Otevřené otázky) |
 | Titulek | „MZPICO+ML V0.3.0“: značka verze pro SAPI, kreslí ji platforma |
 
