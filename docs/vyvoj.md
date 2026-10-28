@@ -54,6 +54,19 @@ Po klonování: `git submodule update --init` (BomberNet).
 
 ## Nasazení nové verze
 
+**Skutečné SAPI s DPI-1 a ZRMD-1** (2026-10-28, tak se nasadila 0.3.0; bez resetu SAPI a bez konzole, CP/M musí
+stát na `A>`, protože `bus run` přepíše TPA):
+
+```
+curl -X PUT -H "X-DPI: 1" --data-binary @build/bombnet.com "http://dpi1.local/api/v1/file?path=/BOMBNET.COM&overwrite=1"
+# v konzoli DPI-1 (web Konzole, telnet 23 nebo MCP console):
+ramdisk save /ZRMD/A_<datum>.BIN                       # záloha A: (ZRMD-1) před změnou
+bus run /DPITEST/DPI.COM GET /BOMBNET.COM A:BOMBNET.COM
+bus run /DPITEST/DPI.COM PUT A:BOMBNET.COM /BOMBNCHK.COM   # kontrola: stáhnout, prvních 39 236 B = build, zbytek 1Ah
+```
+
+`DPI GET` soubor na A: přepíše (`fopen "wb"`). Starou verzi na SD si napřed přejmenovat (`/api/v1/rename`).
+
 **Skutečné SAPI** (DPI-1L, konzole CP/M na COM18, nástroje v `..\SAPI_DPI-firmware\tools`):
 
 ```

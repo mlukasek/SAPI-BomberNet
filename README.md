@@ -23,7 +23,8 @@ Hraje se. **Skutečné SAPI-1 s DPI-1L hraje proti emulátoru [SAPIemu](https://
 sobě. Hra počítá stejně jako ostatní platformy (nahrávky z PC dávají na SAPI stejné hashe stavu). Zbývá vyzkoušet
 web mzpico.com a další platformy. Podrobnosti: [docs/stav.md](docs/stav.md).
 
-Jádro je **BomberNet 0.3.0** (od 2026-10-28; hraje v jedné místnosti i s 0.2.0). Nové: ESC/BREAK opustí zápas,
+Jádro je **BomberNet 0.3.0** (od 2026-10-28; hraje v jedné místnosti i s 0.2.0), týž den ověřené na skutečném SAPI-1
+(sestava s DPI-1 a RAM diskem ZRMD-1). Nové: ESC/BREAK opustí zápas,
 hráč, který položí bombu, na jeden snímek blikne v její barvě a životy hráčů jsou ve stavovém řádku v jejich barvách.
 
 ## Co je potřeba
