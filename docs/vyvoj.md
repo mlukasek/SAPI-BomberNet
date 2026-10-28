@@ -66,6 +66,9 @@ bus run /DPITEST/DPI.COM PUT A:BOMBNET.COM /BOMBNCHK.COM   # kontrola: stáhnout
 ```
 
 `DPI GET` soubor na A: přepíše (`fopen "wb"`). Starou verzi na SD si napřed přejmenovat (`/api/v1/rename`).
+Obraz emulovaného RAM disku na SD (např. `/RAMDISK/RD60.BIN`, když ho emulovaná karta nemá otevřený): stáhnout,
+`python ..\SAPI-Prince-of-Persia\tools\cpmdisk.py RD60.BIN RD60_new.BIN build/bombnet.com=BOMBNET.COM`, ověřit
+`--get`, nahrát zpět.
 
 **Skutečné SAPI** (DPI-1L, konzole CP/M na COM18, nástroje v `..\SAPI_DPI-firmware\tools`):
 

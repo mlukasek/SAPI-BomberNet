@@ -80,8 +80,9 @@ desynchronizace, ESC v síťovém zápase.
 
 - Skutečné SAPI (od 2026-10-28 verze **0.3.0**, MD5 800a0d8f…, 39 236 B): `BOMBNET.COM` na disku A: = fyzický
   RAM disk ZRMD-1 v sestavě s DPI-1 (záloha A: před nahráním `/ZRMD/A_1028.BIN` na SD DPI-1), a v kořeni SD karty
-  DPI-1 (`DPI GET BOMBNET.COM`; předchozí verze tamtéž jako `BOMBN020.COM`). Na emulovaném RAM disku
-  `/RAMDISK/RD60.BIN` a na SD karty DPI-1L zůstává 0.2.0 (hraje s 0.3.0 v jedné místnosti).
+  DPI-1 (`DPI GET BOMBNET.COM`; předchozí verze tamtéž jako `BOMBN020.COM`) a na emulovaném RAM disku
+  `/RAMDISK/RD60.BIN` na SD DPI-1 (`..\SAPI-Prince-of-Persia\tools\cpmdisk.py`, ověřeno zpětným čtením, CRC32
+  obrazu B6C722D3). Na SD karty DPI-1L zatím 0.2.0 (hraje s 0.3.0 v jedné místnosti), vymění se, až bude v rámu.
 - SAPIemu-release: na RAM disku sestavy `sapi1v_BomberNet` 0.3.0 (A:, ECMON volba **3**, pak `BOMBNET`).
 - Nasazení nové verze: `docs/vyvoj.md`, Nasazení.
 
@@ -109,8 +110,8 @@ desynchronizace, ESC v síťovém zápase.
    Postup `docs/vyvoj.md`, Nasazení (DPI-1: `bus run` s `DPI.COM GET`, bez resetu a bez konzole). Na RAM disku sestavy
    `sapi1v_BomberNet` v SAPIemu-release je tatáž 0.3.0; vývojový SAPIemu má herní sestavu `sapi1v_BomberNet`
    s vlastním RAM diskem `media/zrmd-1/bombernet.bin` (`tools/make_hry_disk.py --bombernet`). Případně ještě
-   jednotlivě: ESC/BREAK v zápase s EKL-1 (i držené ESC s autorepeatem); emulovaný RAM disk `RD60.BIN` a SD karta
-   DPI-1L mají zatím 0.2.0.
+   jednotlivě: ESC/BREAK v zápase s EKL-1 (i držené ESC s autorepeatem). SD karta DPI-1L má zatím 0.2.0
+   (emulovaný `RD60.BIN` na DPI-1 už 0.3.0).
 2. **Nahlásit do MZPico/BomberNet** zamrznutí síťového zápasu přerušeného během hlášky na konci kola (Otevřené
    otázky), případně i barvy umírajícího hráče na titulku (`players_colours` běží i na titulku). Upstream zatím
    nemá žádné issue (2026-10-28).
