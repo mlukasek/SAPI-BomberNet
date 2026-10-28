@@ -102,8 +102,10 @@ desynchronizace, ESC v síťovém zápase.
 
 ## Další kroky
 
-1. **Nasadit 0.3.0** (`docs/vyvoj.md`, Nasazení): na skutečné SAPI (RAM disk DPI a SD karta) a na RAM disk sestavy
-   `sapi1v_BomberNet` v SAPIemu-release. Zatím je na obou 0.2.0 (hraje s 0.3.0 v jedné místnosti).
+1. **Nasadit 0.3.0** (`docs/vyvoj.md`, Nasazení) na skutečné SAPI (RAM disk DPI a SD karta); tam je zatím 0.2.0
+   (hraje s 0.3.0 v jedné místnosti). Na RAM disku sestavy `sapi1v_BomberNet` v SAPIemu-release je 0.3.0
+   (MD5 800a0d8f…) od 2026-10-28; vývojový SAPIemu má od téhož dne herní sestavu `sapi1v_BomberNet` s vlastním
+   RAM diskem `media/zrmd-1/bombernet.bin` (`tools/make_hry_disk.py --bombernet`).
    Na skutečném SAPI vyzkoušet ESC/BREAK v zápase (Consul 262.3 i EKL-1, u EKL-1 i držené ESC s autorepeatem),
    bliknutí bomby a barvy životů.
 2. **Nahlásit do MZPico/BomberNet** zamrznutí síťového zápasu přerušeného během hlášky na konci kola (Otevřené
