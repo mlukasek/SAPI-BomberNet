@@ -52,6 +52,7 @@
 #define HOLD_FIRE   1           /* one frame: enough for a bomb or a menu edge; longer, the SPACE that starts a
                                    match from the title would lay a bomb in its first frame */
 #define HOLD_CHAR   3
+#define HOLD_BREAK  1           /* ESC or BREAK in a game: until the next game frame, which asks plat_break first */
 
 const char *const plat_joy_names[PLAT_JOY_TYPES] = {"NONE    ", "MPH-1V  "};
 const char *const plat_kbd_a_alt_name = "CURSOR AND CR   ";
@@ -258,16 +259,19 @@ static void tone_poll(void) {
 static uint8_t kd_a, kf_a, kp_a;                 /* key set A: direction mask, frames left, the next direction */
 static uint8_t kd_b, kf_b, kp_b;                 /* key set B (W A S D) */
 static uint8_t k_space, k_cr, k_fire_b;          /* frames left */
-static uint8_t k_char, k_char_f;
+static uint8_t k_char, k_char_f;                 /* plat_key_char: the character, frames left */
+static uint8_t k_break;                          /* plat_break: ESC or BREAK pressed in a game, frames left */
 /* A hold ages only in a frame in which the game read it: a press caught in the middle of a frame (while reading the
  * keys, or while the lockstep waits for the network) still gets all its frames, so a cursor key always walks a whole
- * cell. Holds the game does not read go away after KB_STALE frames without a key. */
+ * cell. Holds the game does not read go away after KB_STALE frames without a key.
+ * A character (letter, BS, ESC) ages in every frame, read or not: the game reads characters only in the lobby, the
+ * room code entry and a long network wait, so one pressed elsewhere (the title, a match) must not cancel or type
+ * into a later entry. The entry reads in every frame, so a press still gets its HOLD_CHAR frames there. */
 #define S_A      0x01
 #define S_B      0x02
 #define S_SPACE  0x04
 #define S_CR     0x08
 #define S_FIRE_B 0x10
-#define S_CHAR   0x20
 #define KB_STALE 20
 static uint8_t seen, kb_idle;
 
@@ -307,7 +311,11 @@ static void kb_key(uint8_t c) {
   case ' ': k_space = HOLD_FIRE; return;
   case 0x0d: k_cr = HOLD_FIRE; return;
   case 0x03: plat_exit(); return;                                       /* Ctrl+C: back to CP/M */
-  case 0x1b: case 0x84: case 0x85: k_char = 0x1b; k_char_f = HOLD_CHAR; return;   /* ESC, BREAK */
+  case 0x1b: case 0x84: case 0x85:                                      /* ESC, BREAK */
+    k_char = 0x1b;
+    k_char_f = HOLD_CHAR;
+    if (!title_mode) k_break = HOLD_BREAK;      /* only a press in a game leaves it (plat_break) */
+    return;
   case 0x08: case 0x7f: k_char = 8; k_char_f = HOLD_CHAR; return;
   }
   if (u < 'A' || u > 'Z') return;
@@ -344,7 +352,8 @@ static void kb_age(void) {                      /* once per game frame, before i
   if ((seen & S_SPACE) && k_space) k_space--;
   if ((seen & S_CR) && k_cr) k_cr--;
   if ((seen & S_FIRE_B) && k_fire_b) k_fire_b--;
-  if ((seen & S_CHAR) && k_char_f && !--k_char_f) k_char = 0;
+  if (k_char_f && !--k_char_f) k_char = 0;      /* read or not */
+  if (k_break) k_break--;
   seen = 0;
 }
 
@@ -387,15 +396,18 @@ uint8_t plat_keys_b(void) {
 
 uint8_t plat_key_char(void) {
   kb_poll();
-  if (k_char_f) seen |= S_CHAR;
   return k_char;
 }
 
-/* ESC or BREAK pressed (the cancel of plat_key_char), asked at the start of every game frame: leaves the match. The
- * keyboard gives no releases, so the press is used up here: the menu after the match does not see it again. */
+/* ESC or BREAK pressed in a game (the cancel of plat_key_char), asked at the start of every game frame: leaves the
+ * match. The keyboard gives no releases, so "the key is down" is a press caught in a game (title_mode 0) since the
+ * last game frame: an ESC from the title, the lobby or the room code entry does not leave the next match, and one
+ * pressed during the messages between rounds is gone before the next round. The press is used up here: the menu
+ * after the match does not see it again. */
 uint8_t plat_break(void) {
   kb_poll();
-  if (k_char != 0x1b || !k_char_f) return 0;
+  if (!k_break) return 0;
+  k_break = 0;
   k_char = k_char_f = 0;
   return 1;
 }
@@ -587,9 +599,10 @@ static void colour_cell(uint8_t x, uint8_t y, uint8_t at) {
 
 /* after the flush: a cell in the player's colour (the shared death frames), or with PLAYER_FLASH in the bombs' blue
  * (the frame of the drop pose; the blue player 4 white, as on the MZ). Attributes 0-3 are the player colours green,
- * yellow, white, blue (tools/make_tables.py). */
+ * yellow, white, blue (tools/make_tables.py). Not on the title: the core calls it there too, and a player who was
+ * dying when the match was left would get game glyphs drawn over the title's cells at that spot. */
 void plat_player_colour(uint8_t x, uint8_t y, uint8_t player) {
-  if (y >= SCREEN_H) return;
+  if (y >= SCREEN_H || title_mode) return;
   if (player & PLAYER_FLASH) colour_cell(x, y, sapi_player_attr[(player & 3) == 3 ? 2 : 3]);
   else colour_cell(x, y, sapi_player_attr[player]);
 }
