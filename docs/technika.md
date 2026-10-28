@@ -17,12 +17,13 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
 
 | Adresa | Obsah |
 |---|---|
-| 0100–~8C6F | program a tabulky (`build\bombnet.map`) |
-| ~8C70–~9A48 | proměnné jádra i platformy (BSS je v souboru `.COM`), `draw_buf`, `map_layer`, `shadow_vram` |
-| ~9A49–BFFF | zásobník (shora od C000h, `REGISTER_SP` v `build.cmd`) |
+| 0100–~8C69 | program a tabulky (`build\bombnet.map`) |
+| ~8C6A–~9A43 | proměnné jádra i platformy (BSS je v souboru `.COM`), `draw_buf`, `map_layer`, `shadow_vram` |
+| ~9A44–BFFF | zásobník (shora od C000h, `REGISTER_SP` v `build.cmd`) |
 | C000–FFFF | během hry CGA-1V, RAM pod ní je skrytá (CCP a BDOS) |
 
-- `BOMBNET.COM` má 39 241 B (BomberNet 0.3.0, 2026-10-28; s 0.2.0 38 150 B) a musí končit pod C000h.
+- `BOMBNET.COM` má 39 236 B (BomberNet 0.3.0 s opravami klávesnice, 2026-10-28; s 0.2.0 38 150 B) a musí končit
+  pod C000h.
 - Během hry se nevolá CP/M (BDOS je pod CGA) a přerušení jsou zakázaná. Na tom stojí mazání obrazovky
   a `draw_buf` přes `PUSH` ve `flush_screen`.
 - Ctrl+C vrátí do CP/M: opustí síťovou místnost, ztiší zvuk, vrátí RAM na C000h, obnoví přerušení a skončí
@@ -48,6 +49,9 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
     hráč 4 bílý (jako MZ). Další snímek ho `flush_screen` překreslí normálně (jiný kód postavy);
   - **stavový řádek** (2 a víc hráčů): ikona a počet životů každého hráče v jeho barvě. Buňka se překreslí jen
     při změně kódu nebo po smazání obrazovky (`screen_gen`), jinak by to stálo čas v každém snímku (jako CPC).
+  - **na titulku nic:** jádro volá `players_colours` i tam a hráč, který umíral, když se zápas opustil, by na
+    titulku dostal přes jeho buňky znaky z herní tabulky (kus zeleného „B“ v logu). CPC, PC, web i MZ to mají
+    také, SAPI to v `plat_player_colour` vynechá (`title_mode`).
 - **Značka portu na titulku:** za „MZPICO“ (řádek 23, sloupce 28–30) je „+ML“: tahle verze pro SAPI.
   Kreslí se přímo do CGA po `flush_screen` (`title_mark`), jen když je v `shadow_vram` text „MZPICO“ a za ním
   volno. Jádro ani `draw_buf` se nemění. Znak „+“ titulková tabulka MZ nemá: `make_tables.py` ho bere ze
@@ -93,11 +97,19 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
   - sada B: **W A S D**;
   - písmena pro kód místnosti, BS nebo DEL = mazání, ESC nebo BREAK (84h/85h) = zrušit (BREAK v BomberNetu);
     od jádra 0.3.0 ESC/BREAK také **opustí zápas** (`plat_break` v každém herním snímku, místní i síťový zápas;
-    v síti „MATCH LEFT“). Stisk se v `plat_break` spotřebuje, menu po zápasu ho už nevidí;
+    v síti „MATCH LEFT“). Počítá se jen stisk zachycený ve hře (`title_mode` 0) od minulého herního snímku
+    (`k_break`): to je na SAPI „klávesa je dole“ (MZ, CPC a ZX čtou, jestli je ESC právě stisknutá). ESC z titulku,
+    lobby nebo kódu místnosti tak další zápas neopustí a ESC během hlášek mezi koly ho neopustí ani v dalším kole
+    (v síťovém zápase ho tam ale může přečíst jádro při čekání na síť a hra zamrzne, `docs/stav.md`, Otevřené
+    otázky). Stisk se v `plat_break` spotřebuje, menu po zápasu ho už nevidí;
   - **Ctrl+C** = konec do CP/M.
-- Stisk stárne jen ve snímku, ve kterém ho hra přečetla (zachycený uprostřed snímku tak nepřijde o snímek). Jiný
-  směr počká na dokončení rozdělaného políčka, další stisk téže šipky přidá jen celé políčko. Nečtené stisky zmizí
-  po 20 snímcích bez klávesy.
+- Podržení (šipky, palba) stárne jen ve snímku, ve kterém ho hra přečetla (zachycené uprostřed snímku tak nepřijde
+  o snímek). Jiný směr počká na dokončení rozdělaného políčka, další stisk téže šipky přidá jen celé políčko.
+  Nečtená podržení zmizí po 20 snímcích bez klávesy.
+- **Znak** (písmeno, BS, ESC) stárne v každém snímku, přečtený nebo ne (3 snímky). Znaky čte jen lobby, kód
+  místnosti a dlouhé čekání na síť, takže písmeno nebo ESC stisknuté jinde (titulek, zápas, W A S D sady B)
+  nezruší pozdější zadávání kódu ani se do něj nezapíše. Kód místnosti čte znak v každém snímku, psaní je stejné
+  jako dřív.
 - **Joystick platí i jako sada A** (menu, lobby, kód místnosti, hlášky), kromě zápasu, kde má jeden místní hráč
   klávesnici a druhý joystick.
 

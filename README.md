@@ -46,6 +46,9 @@ hráč, který položí bombu, na jeden snímek blikne v její barvě a životy 
 - Klávesnice SAPI hlásí jen stisky: jeden stisk šipky = jedno celé políčko, další stisk během kroku přidá políčko
   nebo zatočí na dalším políčku. Na plynulé hraní je lepší joystick.
 - Joystick (v menu JOYSTICK: MPH-1V, hráč: JOYSTICK MPH-1V) ovládá i menu a lobby.
+- ESC/BREAK opustí zápas během hry. V síťovém zápase hra zamrzne, když se zápas přeruší během hlášky na konci kola
+  (ESC, nebo když se odpojí druhá strana); pomůže jen Ctrl+C. Je to chyba jádra BomberNetu
+  ([docs/stav.md](docs/stav.md), Otevřené otázky).
 - Síťová hra: v menu NETWORK HOST (založí místnost, ukáže kód) nebo JOIN (zadá se kód), pak READY mezerou nebo
   palbou. Hostitel může dát READY kdykoli, hra počká na ostatní.
 - V SAPIemu zapne Ctrl+F8 joystick z klávesnice PC (šipky a mezerník pak nejdou do klávesnice SAPI).

@@ -14,7 +14,7 @@ Po klonování: `git submodule update --init` (BomberNet).
 
 ## Překlad
 
-- `build.cmd` → `build\bombnet.com` (39 241 B s BomberNetem 0.3.0) a `build\bombnet.map` (symboly pro skripty).
+- `build.cmd` → `build\bombnet.com` (39 236 B s BomberNetem 0.3.0) a `build\bombnet.map` (symboly pro skripty).
 - Ze submodulu se překládá `c/core`, `c/common/netdev_card.c` a `c/cpu/z80/loops.c` (do 0.2.0
   `c/common/z80_loops.c`). Po posunu submodulu zkontrolovat, jestli upstream nepřesunul soubory, a projít změny
   `c/core/platform.h` (co musí platforma nově umět).
@@ -44,11 +44,12 @@ Po klonování: `git submodule update --init` (BomberNet).
 | `controls.py [OUT.png]` | start mezerou, chůze šipkami (Consul) a joystickem, poloha hráče, snímek |
 | `replay.py NAHRÁVKA.bnr [--bench] [--slow] [--frames N]` | přehraje nahrávku z PC simulátoru a porovná hash stavu v každém snímku; `--bench` měří práci snímku (od konce čekání v `plat_frame_sync` po začátek dalšího) |
 | `trace.py SYMBOL...` | spustí hru a běží od symbolu k symbolu (ladění startu) |
-| `netplay.py [--seconds N] [--mode 0\|1] [--ports A,B] [--shots DIR]` | síťový zápas dvou instancí (A založí místnost, B se připojí kódem; výchozí porty 8593, 8594), náhodný pohyb joystickem, ve výpisu snímek a zpoždění; snímky v `build/netplay` |
+| `netplay.py [--seconds N] [--mode 0\|1] [--ports A,B] [--shots DIR]` | síťový zápas dvou instancí (A založí místnost, B se připojí kódem; výchozí porty 8593, 8594), náhodný pohyb joystickem, ve výpisu snímek a zpoždění; po konci zápasu hned přestane (dřív až 10 s náhodných kláves, které na titulku spustily hru nebo otevřely místnost); snímky v `build/netplay` |
 | `join.py KÓD [--seconds N] [--idle]` | SAPI v emulátoru se připojí do místnosti (třeba ze skutečného SAPI), dá READY a hraje joystickem |
 | `rematch.py [--used-hosts]` | zápas čerstvé instance (8593) proti instanci po předchozím zápase (8594): hledání desyncu mezi zápasy |
 | `watch.py [--minutes N]` | jen čte paměť: při každém zápase seed, místa, zpoždění, pozice, hash každých 16 snímků, konec; i pro GUI (`SAPIEMU_MCP=…:8580`) |
 | `taps.py [--taps N] [--fast]` | ťuká šipkami v náhodných okamžicích snímku a hlídá, že hráč skončí na celém políčku |
+| `esc.py [--only B,GE,…] [--root DIR]` | ESC/BREAK a znaky: staré ESC z titulku nebo kódu místnosti neopustí další zápas, starý znak nezruší kód ani se do něj nezapíše, ESC/BREAK kdykoli ve snímku opustí zápas, titulek po zápase opuštěném při umírání (15 kontrol, popis v hlavičce; `--root` pro jiný build) |
 | `emu.py`, `sapimcp.py` | společné: symboly, kontrolní bod CP/M, snímek obrazovky, klient MCP |
 
 ## Nasazení nové verze
@@ -106,6 +107,11 @@ SIM_MODE=0 SIM_PLAYERS=4 SIM_SEED=0x0BB1 SIM_RECORD=coop4.bnr ./sim 1500 5
 - **Ověření 2026-10-28 (0.3.0, SAPIemu-release 0.6.0, 4 MHz):** coop 447 snímků, dm2 993, dm4 1499, coop4 819,
   všude 0 rozdílů. `--bench` dm4 600 snímků: medián 38,0 ms, 90 % 52,3 ms, 99 % 76,2 ms, přes 60 ms 26 snímků
   (začátky kol), `flush_screen` medián 9,6 ms. Při 2 MHz (300 snímků) medián 75,1 ms.
+- **Po opravě klávesnice (2026-10-28, build `800a0d8f…`):** všechny čtyři nahrávky znovu 0 rozdílů, `--bench` dm4
+  600 snímků beze změny (medián 38,0 ms, 90 % 52,3 ms, 99 % 76,3 ms, přes 60 ms 26 snímků, `flush_screen` 9,6 ms).
+  Dále `title.py`, `controls.py`, `taps.py --taps 60 --fast` (0 mezipoloh), `esc.py` všech 15 kontrol (build před
+  opravou jich 9 nesplní) a místní kontroly z kontroly za běhu: bliknutí bomby právě jeden snímek, bomba sama
+  modrá, ESC i BREAK (F3) opustí zápas za 2 snímky, životy dvou hráčů zeleně a žlutě.
 
 ## Ověření síťové hry (2026-10-28, 0.3.0)
 
@@ -117,6 +123,12 @@ Dvě instance SAPIemu-release 0.6.0 s `tools/emu/sapi1v_bombernet_test.sapi` (po
 - ESC na připojeném během zápasu: tam „MATCH LEFT“ (`net_abort` 7), u hostitele „CONNECTION LOST“ (5).
 - Smíšená místnost (`emu.Game(root=…)` se starým buildem pro jednu instanci): 0.3.0 host × 0.2.0 (851 snímků)
   i 0.2.0 host × 0.3.0 (648 snímků) bez desynchronizace.
+- **Po opravě klávesnice** (build `800a0d8f…`, porty 8604 a 8605): `netplay.py --seconds 300` celý deathmatch do
+  vítězství (1597 snímků za 153 s, zpoždění 2) bez desynchronizace, hlídač hashů z kontroly za běhu (mimo repo,
+  jako `watch.py`) na obou instancích: 100 společných bloků po 16 snímcích, 0 rozdílů. ESC na připojeném během hry: „MATCH LEFT“ (7) a u hostitele „CONNECTION LOST“
+  (5) do 0,5 s, palba vrátí oba na titulek a místní zápas potom na žádném z nich neskončí (staré ESC). ESC na
+  připojeném během hlášky na konci kola, když čeká na hostitele (ten na 2,5 s pozastavený): oba zamrznou, palba
+  nepomůže (chyba jádra, `docs/stav.md`, Otevřené otázky).
 - `SIM_DM=1` (scénář simulátoru) zapisuje přímo do stavu hry (posune hráče, prokope mapu). Taková nahrávka se
   jinde přehrát nedá.
 

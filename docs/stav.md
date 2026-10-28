@@ -15,12 +15,12 @@ desynchronizace (Martin: „teď to hraje“, ještě s verzí 0.2.0). Repo je v
 | Co | Stav |
 |---|---|
 | Jádro | BomberNet `9961800` (v0.3.0 + jen dokumentace) jako submodul, verze 0.3.0, `BUILD_ID 0604h` (hraje s 0.2.0), beze změny |
-| Platforma SAPI | `sapi/`: CGA-1V, 82C54, YM3812, Consul 262.3 a EKL-1, joystick MPH-1V, porty DPI-1L; `BOMBNET.COM` 39 241 B, konec BSS 9A49h |
+| Platforma SAPI | `sapi/`: CGA-1V, 82C54, YM3812, Consul 262.3 a EKL-1, joystick MPH-1V, porty DPI-1L; `BOMBNET.COM` 39 236 B, konec BSS 9A44h |
 | Determinismus | nahrávky z PC simulátoru 0.3.0: kooperace 1 hráč 447 snímků, deathmatch 2 hráči 993, deathmatch 4 hráči 1499, kooperace 4 hráči 819, **0 rozdílů** hashe |
 | Rychlost | 4 MHz: medián 38 ms na snímek, 90 % do 52 ms (0.2.0: 46 a 58 ms). **2 MHz nehratelné** (medián 75 ms), TURBO nutné |
-| Síť v emulátoru | dvě SAPIemu 0.6.0 (karta DPI-1L) s 0.3.0: celý zápas deathmatche (2203 snímků) bez desynchronizace; 0.3.0 × 0.2.0 v obou rolích bez desynchronizace (`tools/emu/netplay.py`) |
+| Síť v emulátoru | dvě SAPIemu 0.6.0 (karta DPI-1L) s 0.3.0: celý zápas deathmatche (2203 snímků, po opravě klávesnice znovu 1597) bez desynchronizace; 0.3.0 × 0.2.0 v obou rolích bez desynchronizace (`tools/emu/netplay.py`) |
 | Skutečné SAPI | s 0.2.0: host (klávesnice, TURBO) × SAPIemu (CLI i GUI): plynule 59 ms na snímek, 5 zápasů po sobě bez restartu |
-| Ovládání | šipky po celých políčkách (i rychlé ťukání a zatáčení), joystick ve hře i v menu, ESC/BREAK opustí zápas |
+| Ovládání | šipky po celých políčkách (i rychlé ťukání a zatáčení), joystick ve hře i v menu, ESC/BREAK opustí zápas během hry (v síťovém zápase ne během hlášky na konci kola: chyba jádra, Otevřené otázky) |
 | Titulek | „MZPICO+ML V0.3.0“: značka verze pro SAPI, kreslí ji platforma |
 
 ## Přechod na BomberNet 0.3.0 (2026-10-28)
@@ -33,8 +33,8 @@ Co nového chce jádro od platformy (`c/core/platform.h`) a co na to SAPI:
 
 | Změna v BomberNetu | SAPI (`sapi/plat_sapi.c`) |
 |---|---|
-| `plat_break()`: ESC/BREAK v každém herním snímku opustí zápas (místní i síťový) | stisk ESC, BREAK (84h/85h) z `kb_key`; klávesnice nehlásí puštění, proto se stisk spotřebuje |
-| `plat_player_colour` s `PLAYER_FLASH`: hráč na jeden snímek v barvě bomb, když ji položí | modrá (atribut 3), modrý hráč 4 bíle (atribut 2), jako MZ; společné kreslení `colour_cell` |
+| `plat_break()`: ESC/BREAK v každém herním snímku opustí zápas (místní i síťový) | stisk ESC, BREAK (84h/85h) zachycený ve hře od minulého herního snímku (`k_break`, oprava níže); klávesnice nehlásí puštění, proto se stisk spotřebuje |
+| `plat_player_colour` s `PLAYER_FLASH`: hráč na jeden snímek v barvě bomb, když ji položí | modrá (atribut 3), modrý hráč 4 bíle (atribut 2), jako MZ; společné kreslení `colour_cell`; na titulku nic (oprava níže) |
 | `plat_hud_colour()`: životy každého hráče ve stavovém řádku v jeho barvě (2 a víc hráčů) | buňka se překreslí jen při změně kódu nebo po smazání obrazovky (`screen_gen`), jako CPC |
 | `composite_frame()` (začátek snímku, řádky 0–23 jsou kopie mapy) | asm z `c/cpu/z80/loops.c` (`PLAT_ASM_COMPOSITE`) |
 | `flush_screen` ve hře smí smazat jen stavový řádek `draw_buf` | ve hře 40 B místo 1000 (asi 1,7 ms za snímek) |
@@ -46,6 +46,34 @@ Co nového chce jádro od platformy (`c/core/platform.h`) a co na to SAPI:
 Ověřeno v SAPIemu-release 0.6.0 (`docs/vyvoj.md`): titulek, nahrávky, místní zápas (šipky, joystick, `taps.py
 --fast` 0 mezipoloh), bliknutí bomby a barvy stavového řádku, ESC v místním i síťovém zápase („MATCH LEFT“, druhá
 strana „CONNECTION LOST“), síťové zápasy přes produkční relay.
+
+## Opravy po kontrole portu 0.3.0 (2026-10-28)
+
+Port na 0.3.0 prošly dvě nezávislé kontroly: kód (proti upstreamu a platformám MZ, CPC, ZX) a běh v emulátoru
+(nahrávky, místní a síťové zápasy). Submodul, jádro, `BUILD_ID` a hashe sedí. Opraveno jen v platformě:
+
+- **Staré ESC opustilo další zápas hned v prvním snímku.** `plat_break` bral jakýkoli nespotřebovaný stisk
+  ESC/BREAK. Znak ale stárnul jen ve snímku, který ho přečetl, a titulek znaky nečte: ESC stisknuté na titulku,
+  nebo ESC, kterým se zrušilo zadávání kódu místnosti či lobby, čekalo, dokud neprošlo 20 snímků bez klávesy
+  (šipky v menu to počítání nulovaly). Mezera pak spustila zápas a ten hned skončil (`net_abort` 7), stejně tak
+  po opuštění zápasu dvojitým ESC (nebo autorepeatem EKL-1). Teď `plat_break` počítá jen ESC/BREAK zachycené ve
+  hře (`title_mode` 0) od minulého herního snímku (`k_break`), jako „klávesa je dole“ na MZ, CPC a ZX.
+- **Starý znak v kódu místnosti** (už od 0.2.0): ESC z titulku zrušilo zadávání kódu hned po otevření a písmeno
+  stisknuté jinde (třeba W ze sady B) se do kódu zapsalo. Znak teď stárne v každém snímku, přečtený nebo ne
+  (3 snímky). Zadávání kódu ho čte v každém snímku, psaní funguje jako dřív.
+- **Titulek po ESC během umírání hráče** (kosmetické): jádro volá `players_colours` i na titulku a umírající
+  hráč z opuštěného zápasu dostal přes své místo na titulku znaky z herní tabulky (kus zeleného „B“ v logu).
+  `plat_player_colour` na titulku nekreslí. Jádro to tak dělá na všech platformách (CPC, PC a web kreslí špatné
+  znaky, MZ změní barvu), s ESC v 0.3.0 se to dá vyvolat i v místním zápase.
+- **`tools/emu/netplay.py`** kontroloval konec zápasu jen každých 25 kroků a ještě až 10 s posílal náhodný
+  joystick: na titulku hostitele pak začal místní zápas a připojený otevřel novou místnost. Teď hlídá konec
+  v každém kroku.
+
+Nový test `tools/emu/esc.py` (15 kontrol): build 0.3.0 před opravou (MD5 `7e372d1d…`) jich 9 nesplní (B, B1, C,
+E, E1, GW, GE, GCM, H), opravený všechny. Opravený build: `BOMBNET.COM` 39 236 B, MD5
+`800a0d8f4d9e17515311e83494cb3358`. Znovu ověřeno (`docs/vyvoj.md`): nahrávky 0 rozdílů, rychlost beze změny,
+titulek, ovládání, `taps.py --fast`, bliknutí bomby a barvy životů, celý síťový deathmatch přes relay bez
+desynchronizace, ESC v síťovém zápase.
 
 ## Kde je hra
 
@@ -76,22 +104,36 @@ strana „CONNECTION LOST“), síťové zápasy přes produkční relay.
 
 1. **Nasadit 0.3.0** (`docs/vyvoj.md`, Nasazení): na skutečné SAPI (RAM disk DPI a SD karta) a na RAM disk sestavy
    `sapi1v_BomberNet` v SAPIemu-release. Zatím je na obou 0.2.0 (hraje s 0.3.0 v jedné místnosti).
-   Na skutečném SAPI vyzkoušet ESC/BREAK v zápase (Consul 262.3 i EKL-1), bliknutí bomby a barvy životů.
-2. Proti webu mzpico.com (MZ-800) a dalším platformám, hra s joystickem na skutečném SAPI.
-3. Firmware DPI: SD karta dvakrát za běhu přestala odpovídat (zotavení po chybě, SPI 12,5 MHz), druhý USB port
+   Na skutečném SAPI vyzkoušet ESC/BREAK v zápase (Consul 262.3 i EKL-1, u EKL-1 i držené ESC s autorepeatem),
+   bliknutí bomby a barvy životů.
+2. **Nahlásit do MZPico/BomberNet** zamrznutí síťového zápasu přerušeného během hlášky na konci kola (Otevřené
+   otázky), případně i barvy umírajícího hráče na titulku (`players_colours` běží i na titulku). Upstream zatím
+   nemá žádné issue (2026-10-28).
+3. Proti webu mzpico.com (MZ-800) a dalším platformám, hra s joystickem na skutečném SAPI.
+4. Firmware DPI: SD karta dvakrát za běhu přestala odpovídat (zotavení po chybě, SPI 12,5 MHz), druhý USB port
    (COM18) jednou přestal přenášet (`..\SAPI_DPI-firmware\docs\mereni.md`).
-4. Zrychlit porovnání buněk ve `flush_screen` (asi 8 ms), pokud to bude potřeba.
+5. Zrychlit porovnání buněk ve `flush_screen` (asi 8 ms), pokud to bude potřeba.
 
 ## Otevřené otázky
 
+- **Síťový zápas zamrzne, když se přeruší během hlášky na konci kola** (chyba jádra, stejně s 0.2.0; našla ji
+  kontrola za běhu 2026-10-28). Hláška deathmatche „DRAW / PRESS FIRE“ nebo „PLAYER n WINS THE ROUND/MATCH“
+  (`show_message`) čeká na palbu ze síťových kláves. Přerušení (ESC, které jádro přečte při čekání na síť, nebo
+  odpojení druhé strany) nastaví `net_abort`, `net_lockstep_poll` pak všechny klávesy nuluje a místní klávesy
+  `show_message` bere jen při `net_active` 0, které nuluje až `net_match_end` po zápase. Stroj stojí na hlášce
+  a palba nepomůže; druhá strana čeká, a když se první ukončí Ctrl+C, zamrzne na hlášce také. Ven jen Ctrl+C (do
+  CP/M). Platforma to opravit nemůže (jádro beze změny). Návrh pro upstream: v `show_message` při `net_abort`
+  skončit (zápas pak ukáže „MATCH LEFT“ nebo „CONNECTION LOST“). Na SAPI ESC během hlášky jindy nic neudělá
+  (jádro ho čte jen při čekání na síť) a od opravy klávesnice platí znak jen 3 snímky.
 - **Desync jednou** (SAPI host po předchozím zápase, GUI SAPIemu čerstvě JOIN, mapy se lišily od začátku).
   Nezopakoval se: v emulátorech v obou pořadích (čerstvý × použitý) ani v 5 zápasech SAPI × GUI po sobě
   (`tools/emu/watch.py`). Při dalším výskytu porovnat záznam `watch.py` (seed, místa, hashe) z obou stran.
   Možná příčina, opravená v jádře 0.3.0: `run_match` teď nuluje `hit_x`, `hit_y` (patří do hashe) a `run_game`
   nuluje `net_abort`, „co zbylo po předchozím zápase“. Potvrdit to jde jen dalším hraním (SAPI s 0.3.0).
-- Síťový zápas dvou SAPIemu běžel v testech v průměru asi 80–90 ms na snímek včetně přestávek mezi koly (0.2.0
-  stejně, 619 snímků za 58 s proti 698 u 0.3.0). Zpoždění zůstalo 2 snímky, na 1 nekleslo. Na skutečném SAPI
-  proti SAPIemu bylo 59 ms na snímek; čistý čas snímku ve dvou emulátorech zvlášť neměřen.
+- Síťový zápas dvou SAPIemu s 0.3.0: během hry medián 60,2 ms na snímek (tempo místnosti je 59,9 ms), s pauzami
+  mezi koly (3,5–8,3 s) celkem 96–103 ms na snímek (kontroly 2026-10-28; celkové tempo 0.2.0 bylo stejné).
+  Zpoždění zůstalo 2 snímky, na 1 nekleslo (to chce zpáteční cestu nejvýš 2 snímky: LAN, místní relay). Na
+  skutečném SAPI proti SAPIemu bylo 59 ms na snímek.
 - Na autorově JPR-1V je TURBO normálně rozpojené (2 MHz). BomberNet potřebuje 4 MHz.
 - EKL-1 má asi autorepeat: držená šipka přidává políčka (nejvýš jedno dopředu). Ověřit na skutečné klávesnici.
 - Po Ctrl+C (konec hry do CP/M) se konzole CP/M může přepnout ze sériové linky na AND-1V (podle DCD při teplém
