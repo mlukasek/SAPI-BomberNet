@@ -26,6 +26,6 @@ zcc +cpm %ZOPT% -m -I"%BN%\core" -I"%BN%\common" -I"%ROOT%sapi" ^
   "%BN%\core\bomber.c" "%BN%\core\netplay.c" "%BN%\core\data.c" "%BN%\core\map.c" "%BN%\core\game.c" ^
   "%BN%\core\input.c" "%BN%\core\video.c" "%BN%\core\enemy.c" "%BN%\core\bomb.c" "%BN%\core\player.c" ^
   "%ROOT%sapi\plat_sapi.c" "%ROOT%sapi\uc_sapi.c" "%ROOT%sapi\tables.c" ^
-  "%BN%\common\netdev_card.c" "%BN%\common\z80_loops.c"
+  "%BN%\common\netdev_card.c" "%BN%\cpu\z80\loops.c"
 if errorlevel 1 exit /b 1
 for %%f in (bombnet.com) do echo build\bombnet.com: %%~zf bytes

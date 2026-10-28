@@ -391,6 +391,15 @@ uint8_t plat_key_char(void) {
   return k_char;
 }
 
+/* ESC or BREAK pressed (the cancel of plat_key_char), asked at the start of every game frame: leaves the match. The
+ * keyboard gives no releases, so the press is used up here: the menu after the match does not see it again. */
+uint8_t plat_break(void) {
+  kb_poll();
+  if (k_char != 0x1b || !k_char_f) return 0;
+  k_char = k_char_f = 0;
+  return 1;
+}
+
 uint8_t plat_joy(uint8_t n) {
   uint8_t k = 0, r;
   if (joy_type == JOY_NONE || n) return 0;
@@ -564,17 +573,45 @@ sc_rowtab:
   __endasm;
 }
 
-/* after the flush: a cell in the player's colour (the shared death frames) */
-void plat_player_colour(uint8_t x, uint8_t y, uint8_t player) {
+/* cell (x, y) as it is in shadow_vram (game mode), in the CGA attribute at */
+static void colour_cell(uint8_t x, uint8_t y, uint8_t at) {
   const uint8_t *g;
-  uint8_t *s, at, i;
-  if (y >= SCREEN_H) return;
+  uint8_t *s, i;
   g = sapi_glyphs + (uint16_t)sapi_game_glyph[shadow_vram[row_off[y] + x]] * 8;
-  at = sapi_player_attr[player];
   s = (uint8_t *)(CGA + (uint16_t)y * 640 + x * 2);
   for (i = 0; i < 8; i++, s += 80) {
     s[0] = (uint8_t)((g[i] & 0xf0) | at);
     s[1] = (uint8_t)((g[i] << 4) | at);
+  }
+}
+
+/* after the flush: a cell in the player's colour (the shared death frames), or with PLAYER_FLASH in the bombs' blue
+ * (the frame of the drop pose; the blue player 4 white, as on the MZ). Attributes 0-3 are the player colours green,
+ * yellow, white, blue (tools/make_tables.py). */
+void plat_player_colour(uint8_t x, uint8_t y, uint8_t player) {
+  if (y >= SCREEN_H) return;
+  if (player & PLAYER_FLASH) colour_cell(x, y, sapi_player_attr[(player & 3) == 3 ? 2 : 3]);
+  else colour_cell(x, y, sapi_player_attr[player]);
+}
+
+/* after the flush: status-line cells in the player's colour (each player's lives icon and count). A cell is drawn
+ * again only when its code changed or the screen was wiped (as the CPC): the flush leaves an unchanged cell alone,
+ * and the frame has no time to spare. blank: for machines with colour clash, not needed here. */
+static uint16_t hud_gen = 0x100;                /* never a screen_gen at first */
+static uint8_t hud_seen[2 * MAX_PLAYERS];
+void plat_hud_colour(uint8_t x, uint8_t n, uint8_t player, uint8_t blank) {
+  uint8_t k, code, *seen_code;
+  (void)blank;
+  if (hud_gen != screen_gen) {
+    memset(hud_seen, 0xff, sizeof(hud_seen));
+    hud_gen = screen_gen;
+  }
+  seen_code = hud_seen + 2 * player;
+  for (k = 0; k < n && k < 2; k++, x++) {
+    code = shadow_vram[HUD_ROW * SCREEN_W + x];
+    if (seen_code[k] == code) continue;
+    seen_code[k] = code;
+    colour_cell(x, HUD_ROW, sapi_player_attr[player]);
   }
 }
 
@@ -602,7 +639,8 @@ static void title_mark(void) {
   }
 }
 
-/* flush_screen: draw_buf -> screen, changed cells only; clears draw_buf. After clear_buffers the screen is wiped
+/* flush_screen: draw_buf -> screen, changed cells only; clears draw_buf (in a game only the status row: every game
+ * frame starts with composite_frame, which overwrites rows 0-23). After clear_buffers the screen is wiped
  * in one pass and only the cells that are not blank are drawn. The interrupts are off (plat_init): the wipe and
  * the clear push with SP. */
 void flush_screen(void) __naked {
@@ -651,7 +689,11 @@ fs_row:
     ld   (fs_sp),sp         ; the draw buffer starts every frame empty
     ld   sp,_draw_buf+1000
     ld   hl,0x2020
-    ld   b,125
+    ld   b,125              ; title: all 1000 cells
+    ld   a,(_title_mode)
+    or   a
+    jr   nz,fs_clr
+    ld   b,5                ; game: the status row only, composite_frame overwrites rows 0-23 (platform.h)
 fs_clr:
     push hl
     push hl

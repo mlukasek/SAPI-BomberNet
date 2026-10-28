@@ -55,7 +55,8 @@ class Inst:
     def status(self):
         fn = self.peek('_frame_no', 2)
         return (f'{self.name}: title {self.peek("_title_mode")[0]} net_active {self.peek("_net_active")[0]} '
-                f'abort {self.peek("_net_abort")[0]} frame {fn[0] | fn[1] << 8} code {self.peek("_net_code", 4).decode()}')
+                f'abort {self.peek("_net_abort")[0]} frame {fn[0] | fn[1] << 8} delay {self.peek("_net_delay")[0]} '
+                f'code {self.peek("_net_code", 4).decode()}')
 
 
 pa, pb = a.ports.split(',')
