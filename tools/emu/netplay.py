@@ -118,8 +118,10 @@ while time.time() - t0 < a.seconds:
     n += 1
     if n % 25 == 0:
         print(f'{time.time() - t0:5.1f} s  {A.status()} | {B.status()}')
-        if A.peek('_net_abort')[0] or B.peek('_net_abort')[0] or not A.peek('_net_active')[0]:
-            break
+    # the end checked every step: random moves after the match would start a game on the title or open a room
+    if A.peek('_net_abort')[0] or B.peek('_net_abort')[0] or not A.peek('_net_active')[0] \
+            or not B.peek('_net_active')[0]:
+        break
 for i in (A, B):
     i.call('joystick', port=0, pressed=[])
 A.shot('match')
