@@ -6,7 +6,7 @@
 |---|---|---|
 | z88dk, noční build | `E:\SAPI_GIT\Tools\z88dk-nightly` (2026-10-15, proměnná `Z88DK`) | překlad (`zcc +cpm`); **ne 2.4**, viz Pasti |
 | Python 3 | | tabulky, skripty emulátoru |
-| SAPIemu release | `E:\SAPI_GIT\SAPIemu-release` (0.5.0) | běh a ověřování přes MCP |
+| SAPIemu release | `E:\SAPI_GIT\SAPIemu-release` (0.6.0, karta DPI-1L) | běh a ověřování přes MCP |
 | WSL s gcc | Ubuntu | PC simulátor BomberNetu (nahrávky) |
 | znakový generátor MZ-700 | `..\SAPI-Bomberman-private\cgrom.bin` (mimo repo) | jen pro `tools/make_tables.py` |
 
@@ -14,7 +14,10 @@ Po klonování: `git submodule update --init` (BomberNet).
 
 ## Překlad
 
-- `build.cmd` → `build\bombnet.com` (asi 38 KB) a `build\bombnet.map` (symboly pro skripty).
+- `build.cmd` → `build\bombnet.com` (39 241 B s BomberNetem 0.3.0) a `build\bombnet.map` (symboly pro skripty).
+- Ze submodulu se překládá `c/core`, `c/common/netdev_card.c` a `c/cpu/z80/loops.c` (do 0.2.0
+  `c/common/z80_loops.c`). Po posunu submodulu zkontrolovat, jestli upstream nepřesunul soubory, a projít změny
+  `c/core/platform.h` (co musí platforma nově umět).
 - Optimalizace z88dk: proměnná `ZOPT` (výchozí `-O2`; `-O3` nic nezrychlí).
 - Tabulky obrazovky po změně tabulek MZ v BomberNetu: `python tools/make_tables.py [--cgrom SOUBOR]`.
 
@@ -39,9 +42,9 @@ Po klonování: `git submodule update --init` (BomberNet).
 |---|---|
 | `title.py [OUT.png] [--slow]` | spustí hru a vyfotí titulek |
 | `controls.py [OUT.png]` | start mezerou, chůze šipkami (Consul) a joystickem, poloha hráče, snímek |
-| `replay.py NAHRÁVKA.bnr [--bench] [--slow] [--frames N]` | přehraje nahrávku z PC simulátoru a porovná hash stavu v každém snímku; `--bench` měří práci snímku |
+| `replay.py NAHRÁVKA.bnr [--bench] [--slow] [--frames N]` | přehraje nahrávku z PC simulátoru a porovná hash stavu v každém snímku; `--bench` měří práci snímku (od konce čekání v `plat_frame_sync` po začátek dalšího) |
 | `trace.py SYMBOL...` | spustí hru a běží od symbolu k symbolu (ladění startu) |
-| `netplay.py [--seconds N] [--mode 0\|1]` | síťový zápas dvou instancí (8593 založí místnost, 8594 se připojí kódem), náhodný pohyb joystickem; snímky v `build/netplay` |
+| `netplay.py [--seconds N] [--mode 0\|1] [--ports A,B] [--shots DIR]` | síťový zápas dvou instancí (A založí místnost, B se připojí kódem; výchozí porty 8593, 8594), náhodný pohyb joystickem, ve výpisu snímek a zpoždění; snímky v `build/netplay` |
 | `join.py KÓD [--seconds N] [--idle]` | SAPI v emulátoru se připojí do místnosti (třeba ze skutečného SAPI), dá READY a hraje joystickem |
 | `rematch.py [--used-hosts]` | zápas čerstvé instance (8593) proti instanci po předchozím zápase (8594): hledání desyncu mezi zápasy |
 | `watch.py [--minutes N]` | jen čte paměť: při každém zápase seed, místa, zpoždění, pozice, hash každých 16 snímků, konec; i pro GUI (`SAPIEMU_MCP=…:8580`) |
@@ -97,6 +100,23 @@ SIM_MODE=0 SIM_PLAYERS=4 SIM_SEED=0x0BB1 SIM_RECORD=coop4.bnr ./sim 1500 5
 ```
 
 - `replay.py` přehrává jen první zápas nahrávky (po návratu na titulek skončí, jako `replay_cpc.py`).
+- Po posunu submodulu simulátor přeložit znovu a nahrávky nahrát znovu: nahrávka platí pro verzi jádra, ze které
+  je. `replay.py` jako `replay_cpc.py` od 0.3.0 předem zapíše `hit_x`, `hit_y` a `net_abort` (co zbývá po
+  předchozím zápase), zápas na nich nesmí záviset. Build 0.2.0 s tím nahrávky 0.3.0 nepřehraje (rozdíl v 1. snímku).
+- **Ověření 2026-10-28 (0.3.0, SAPIemu-release 0.6.0, 4 MHz):** coop 447 snímků, dm2 993, dm4 1499, coop4 819,
+  všude 0 rozdílů. `--bench` dm4 600 snímků: medián 38,0 ms, 90 % 52,3 ms, 99 % 76,2 ms, přes 60 ms 26 snímků
+  (začátky kol), `flush_screen` medián 9,6 ms. Při 2 MHz (300 snímků) medián 75,1 ms.
+
+## Ověření síťové hry (2026-10-28, 0.3.0)
+
+Dvě instance SAPIemu-release 0.6.0 s `tools/emu/sapi1v_bombernet_test.sapi` (porty 8601 a 8602), relay
+`ws://api.mzpico.com/net`:
+
+- `netplay.py --ports 8601,8602 --seconds 300`: celý deathmatch do vítězství (2203 snímků, zpoždění 2) bez
+  desynchronizace, `net_abort` 0 na obou stranách; `watch.py` na obou instancích: 50 společných hashů, 0 rozdílů.
+- ESC na připojeném během zápasu: tam „MATCH LEFT“ (`net_abort` 7), u hostitele „CONNECTION LOST“ (5).
+- Smíšená místnost (`emu.Game(root=…)` se starým buildem pro jednu instanci): 0.3.0 host × 0.2.0 (851 snímků)
+  i 0.2.0 host × 0.3.0 (648 snímků) bez desynchronizace.
 - `SIM_DM=1` (scénář simulátoru) zapisuje přímo do stavu hry (posune hráče, prokope mapu). Taková nahrávka se
   jinde přehrát nedá.
 

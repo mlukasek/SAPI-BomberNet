@@ -17,12 +17,12 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
 
 | Adresa | Obsah |
 |---|---|
-| 0100–~8916 | program a tabulky (`build\bombnet.map`) |
-| ~8917–~9605 | proměnné jádra i platformy (BSS je v souboru `.COM`), `draw_buf`, `map_layer`, `shadow_vram` |
-| ~9606–BFFF | zásobník (shora od C000h, `REGISTER_SP` v `build.cmd`) |
+| 0100–~8C6F | program a tabulky (`build\bombnet.map`) |
+| ~8C70–~9A48 | proměnné jádra i platformy (BSS je v souboru `.COM`), `draw_buf`, `map_layer`, `shadow_vram` |
+| ~9A49–BFFF | zásobník (shora od C000h, `REGISTER_SP` v `build.cmd`) |
 | C000–FFFF | během hry CGA-1V, RAM pod ní je skrytá (CCP a BDOS) |
 
-- `BOMBNET.COM` má asi 38 KB (stav 2026-10-16) a musí končit pod C000h.
+- `BOMBNET.COM` má 39 241 B (BomberNet 0.3.0, 2026-10-28; s 0.2.0 38 150 B) a musí končit pod C000h.
 - Během hry se nevolá CP/M (BDOS je pod CGA) a přerušení jsou zakázaná. Na tom stojí mazání obrazovky
   a `draw_buf` přes `PUSH` ve `flush_screen`.
 - Ctrl+C vrátí do CP/M: opustí síťovou místnost, ztiší zvuk, vrátí RAM na C000h, obnoví přerušení a skončí
@@ -39,7 +39,15 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
     generátoru MZ-700 (v repu není, skript ho čte z `..\SAPI-Bomberman-private\cgrom.bin`);
   - **219 předkreslených buněk** po 16 bajtech, tabulka logický kód → buňka zvlášť pro hru a pro titulek;
   - **8 atributů**: barvy popředí MZ na černém pozadí (hra jiné pozadí nepoužívá);
-  - pro barvy hráčů při umírání (`plat_player_colour`) ještě 65 znaků a atributy hráčů.
+  - pro barvy hráčů (`plat_player_colour`, `plat_hud_colour`) ještě 65 znaků a atributy hráčů (0 zelená,
+    1 žlutá, 2 bílá, 3 modrá).
+- **Barvy hráčů po `flush_screen`** (jádro 0.3.0, `players_colours` a `hud_colours`); `colour_cell` překreslí
+  buňku podle `shadow_vram` daným atributem:
+  - umírající hráč v barvě hráče (tabulka MZ má postavy umírání zelené);
+  - **bliknutí bomby**: hráč, který právě položil bombu, je jeden snímek modrý jako bomby (`PLAYER_FLASH`), modrý
+    hráč 4 bílý (jako MZ). Další snímek ho `flush_screen` překreslí normálně (jiný kód postavy);
+  - **stavový řádek** (2 a víc hráčů): ikona a počet životů každého hráče v jeho barvě. Buňka se překreslí jen
+    při změně kódu nebo po smazání obrazovky (`screen_gen`), jinak by to stálo čas v každém snímku (jako CPC).
 - **Značka portu na titulku:** za „MZPICO“ (řádek 23, sloupce 28–30) je „+ML“: tahle verze pro SAPI.
   Kreslí se přímo do CGA po `flush_screen` (`title_mark`), jen když je v `shadow_vram` text „MZPICO“ a za ním
   volno. Jádro ani `draw_buf` se nemění. Znak „+“ titulková tabulka MZ nemá: `make_tables.py` ho bere ze
@@ -48,7 +56,10 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
   - porovná všech 1000 buněk `draw_buf` se `shadow_vram` (rozvinutá smyčka, nezměněná buňka 36 taktů);
   - změněnou buňku zkopíruje z předkreslených dat;
   - po `clear_buffers` smaže celou obrazovku přes `PUSH`;
-  - nakonec vyplní `draw_buf` mezerami.
+  - nakonec vyplní `draw_buf` mezerami: na titulku celý, ve hře jen stavový řádek (od jádra 0.3.0 začíná každý
+    herní snímek `composite_frame`, která řádky 0–23 přepíše kopií mapy; `platform.h`).
+- Pořadí snímku od jádra 0.3.0 (`present_frame`): `flush_screen`, barvy hráčů, pak teprve čekání
+  v `plat_frame_sync`. Obraz jde ven hned po logice, ne až po čekání (kratší odezva kláves).
 
 ## Časování
 
@@ -81,6 +92,8 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
     položilo bombu v jeho prvním snímku.
   - sada B: **W A S D**;
   - písmena pro kód místnosti, BS nebo DEL = mazání, ESC nebo BREAK (84h/85h) = zrušit (BREAK v BomberNetu);
+    od jádra 0.3.0 ESC/BREAK také **opustí zápas** (`plat_break` v každém herním snímku, místní i síťový zápas;
+    v síti „MATCH LEFT“). Stisk se v `plat_break` spotřebuje, menu po zápasu ho už nevidí;
   - **Ctrl+C** = konec do CP/M.
 - Stisk stárne jen ve snímku, ve kterém ho hra přečetla (zachycený uprostřed snímku tak nepřijde o snímek). Jiný
   směr počká na dokončení rozdělaného políčka, další stisk téže šipky přidá jen celé políčko. Nečtené stisky zmizí
@@ -94,10 +107,26 @@ Amstrad CPC (`BomberNet/c/platform/cpc`) a hardwarová vrstva SAPI-Bombermana (`
 - `BomberNet/c/common/netdev_card.c` beze změny. Kartu pozná podle REVD (stav `02 06 04`) a INFO (bajt 3
   bit 08h). DPI-1L odpovídá stejně jako MZPico a Unicard (`..\SAPI_DPI-firmware\docs\sapiemu_dpi.md`).
 - Bez karty (nebo bez sítě) je v menu řádek NETWORK zašedlý.
+- Jádro 0.3.0 mění zpoždění vstupu během zápasu (hostitel podle hlášení ostatních, 1 až hodnota z lobby). To je
+  celé v jádře, platforma nic nedělá. Run-ahead (`PLAT_RUNAHEAD`) SAPI nepoužívá: je pro rychlé stroje, které
+  stihnou snímky simulovat znovu (PC, web, Amiga, ST); MZ-800, CPC a Spectrum ho také nemají.
 
-## Rychlost (SAPIemu 0.5.0, 2026-10-16)
+## Rychlost (SAPIemu 0.6.0, 2026-10-28, BomberNet 0.3.0)
 
-Práce snímku = od `flush_screen` po další `plat_frame_sync` (`tools/emu/replay.py --bench`). Snímek má 60 ms.
+Práce snímku = od konce čekání v `plat_frame_sync` po začátek dalšího (logika, `flush_screen`, barvy;
+`tools/emu/replay.py --bench`). Snímek má 60 ms.
+
+| Nahrávka | CPU | medián | 90 % | 99 % | snímků přes 60 ms | z toho `flush_screen` (medián) |
+|---|---|---|---|---|---|---|
+| deathmatch 4 hráči, hash po 16 snímcích (jako v síti), 600 snímků | 4 MHz | 38,0 ms | 52,3 ms | 76,2 ms | 4 % | 9,6 ms |
+| totéž, 300 snímků | 2 MHz | 75,1 ms | 100,1 ms | 131,0 ms | 88 % | 19,1 ms |
+
+Proti 0.2.0 (tabulka níže) asi o 8 ms méně: jádro 0.3.0 kopíruje mapu do `draw_buf` přes `LDI`
+(`composite_frame`), čísla píše v asm, hash po částech bez dělení; platforma maže ve hře jen stavový řádek.
+
+### Měření s BomberNetem 0.2.0 (SAPIemu 0.5.0, 2026-10-16)
+
+Práce snímku = od `flush_screen` po další `plat_frame_sync` (tehdy flush po čekání, totéž měřeno jinak).
 
 | Nahrávka | CPU | medián | 90 % | 99 % | snímků přes 60 ms | z toho `flush_screen` (medián) |
 |---|---|---|---|---|---|---|
@@ -113,4 +142,5 @@ Práce snímku = od `flush_screen` po další `plat_frame_sync` (`tools/emu/repl
 - `-O3` místo výchozí optimalizace z88dk nepomohla.
 - **Při 2 MHz** by SAPI zpomalilo celou místnost asi na dvě třetiny (lockstep čeká na nejpomalejšího).
   Na autorově JPR-1V je TURBO rozpojené (2 MHz), pro BomberNet je potřeba ho zapnout.
-- Co by šlo zrychlit v platformě: porovnání 1000 buněk ve `flush_screen` (asi 9 ms).
+- Co by šlo zrychlit v platformě: porovnání 1000 buněk ve `flush_screen` (asi 8 ms). Ve hře by šlo porovnávat
+  jen buňky, které se mohly změnit, ale to by potřebovalo vědět víc o jádru.

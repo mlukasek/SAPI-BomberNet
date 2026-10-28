@@ -2,7 +2,8 @@
 
 Síťový Bomberman **[BomberNet](https://github.com/MZPico/BomberNet)** pro československý počítač
 **Tesla SAPI-1**. Hraje se v jedné síťové místnosti se Sharpy MZ-800 (i ve webovém emulátoru na mzpico.com),
-ZX Spectrem, Amstradem CPC a PC.
+ZX Spectrem, Amstradem CPC, PC a dalšími stroji, na které BomberNet převedli (Atari, C64, Amiga, Atari ST,
+prohlížeč).
 
 Port používá jádro hry BomberNetu beze změny (git submodul) a přidává vrstvu pro hardware SAPI-1. Síť zajišťuje
 karta **[DPI-1L](https://github.com/mlukasek/SAPI_DPI-1L)** s firmwarem
@@ -22,6 +23,9 @@ Hraje se. **Skutečné SAPI-1 s DPI-1L hraje proti emulátoru [SAPIemu](https://
 sobě. Hra počítá stejně jako ostatní platformy (nahrávky z PC dávají na SAPI stejné hashe stavu). Zbývá vyzkoušet
 web mzpico.com a další platformy. Podrobnosti: [docs/stav.md](docs/stav.md).
 
+Jádro je **BomberNet 0.3.0** (od 2026-10-28; hraje v jedné místnosti i s 0.2.0). Nové: ESC/BREAK opustí zápas,
+hráč, který položí bombu, na jeden snímek blikne v její barvě a životy hráčů jsou ve stavovém řádku v jejich barvách.
+
 ## Co je potřeba
 
 - SAPI-1 v sestavě V: JPR-1V **s TURBO (4 MHz)**, RAM-1V, CGA-1V, MPH-1V, klávesnice Consul 262.3 nebo EKL-1,
@@ -36,6 +40,7 @@ web mzpico.com a další platformy. Podrobnosti: [docs/stav.md](docs/stav.md).
 | pohyb, výběr v menu | šipky (sada A), W A S D (sada B) | páka |
 | bomba, potvrzení | mezera (sada A), E (sada B) | palba |
 | kód místnosti | písmena, BS/DEL maže, ESC/BREAK zruší | páka (písmeno a pozice), palba |
+| opustit zápas | ESC/BREAK | |
 | konec do CP/M | Ctrl+C | |
 
 - Klávesnice SAPI hlásí jen stisky: jeden stisk šipky = jedno celé políčko, další stisk během kroku přidá políčko
